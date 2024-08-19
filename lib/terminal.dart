@@ -1,49 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_roguelike/terminal_cubit/terminal_cubit.dart';
+
 
 class Terminal extends StatelessWidget {
-  const Terminal({super.key});
+  const Terminal(
+      {super.key, required this.buffer, this.rows = 41, this.columns = 20});
+
+  final int rows;
+  final int columns;
+  final List<String> buffer;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          TerminalCubit()..printText(text: 'Roguelike', x: 6, y: 20),
-      child: const TerminalView(),
-    );
-  }
-}
-
-class TerminalView extends StatelessWidget {
-  const TerminalView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(body: BlocBuilder<TerminalCubit, TerminalState>(
-      builder: (context, state) {
-        return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: state.columns,
-            childAspectRatio: 1.0,
-          ),
-          itemCount: state.rows * state.columns,
-          itemBuilder: (context, index) {
-            return GridTile(
-              child: Container(
-                color: Colors.black,
-                child: Center(
-                  child: Text(
-                    state.buffer[index],
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: rows * columns,
+      itemBuilder: (context, index) {
+        return GridTile(
+          child: Container(
+            color: Colors.black,
+            child: Center(
+              child: Text(
+                buffer[index],
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
-            );
-          },
+            ),
+          ),
         );
       },
-    )));
+    );
   }
 }

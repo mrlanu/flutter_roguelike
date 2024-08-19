@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_roguelike/terminal.dart';
+import 'package:flutter_roguelike/logic.dart';
+
+import 'models/models.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Terminal(),
+      home: const Logic(),
     );
   }
 }
