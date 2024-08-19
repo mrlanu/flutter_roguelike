@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 
-class Terminal extends StatelessWidget {
-  const Terminal(
+class RoguelikeToolkitView extends StatelessWidget {
+  const RoguelikeToolkitView(
       {super.key, required this.buffer, this.rows = 41, this.columns = 20});
 
   final int rows;
