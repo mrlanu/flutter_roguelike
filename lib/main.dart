@@ -4,18 +4,20 @@ import 'package:flutter_roguelike/rl_state.dart';
 
 import 'rltk/rltk.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final ctx = await RoguelikeToolkit.instance();
+  runApp(MyApp(ctx: ctx,));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.ctx});
 
+  final RoguelikeToolkit ctx;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final rlState = RoguelikeGameState();
-    final ctx = RoguelikeToolkit();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Roguelike',

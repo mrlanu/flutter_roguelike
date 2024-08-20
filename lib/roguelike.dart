@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'const/const.dart';
 import 'game_state.dart';
 import 'rltk/rltk.dart';
 import 'widgets/widgets.dart';
 
 class Roguelike extends StatefulWidget {
   const Roguelike(
-      {super.key, required this.gameState, required this.ctx, this.fps = 60});
+      {super.key, required this.gameState, required this.ctx});
 
   final GameState gameState;
   final RoguelikeToolkit ctx;
-  final int fps;
 
   @override
   State<Roguelike> createState() => _RoguelikeState();
@@ -24,7 +24,7 @@ class _RoguelikeState extends State<Roguelike> {
   @override
   void initState() {
     super.initState();
-    final ms = (1000 / widget.fps).floor();
+    final ms = (1000 / fps).floor();
     _timer = Timer.periodic(Duration(milliseconds: ms), _tick);
   }
 
@@ -33,10 +33,7 @@ class _RoguelikeState extends State<Roguelike> {
     return SafeArea(
         child: Scaffold(
             body: Stack(children: [
-      RoguelikeToolkitView(
-          buffer: widget.ctx.buffer,
-          rows: widget.ctx.rows,
-          columns: widget.ctx.columns),
+      RoguelikeToolkitView(toolkit: widget.ctx,),
       Positioned(
           bottom: 30,
           right: 30,

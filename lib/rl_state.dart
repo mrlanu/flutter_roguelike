@@ -9,6 +9,7 @@ class RoguelikeGameState extends GameState {
 
   @override
   void tick({required RoguelikeToolkit ctx}) {
-    ctx.printText(text: 'text', x: 5, y: 10);
+    //ctx.set(symbol: '@', x: 10, y: 10);
+    ctx.printText(text: 'Hello Rogualike', x: 3, y: 15);
   }
 }
