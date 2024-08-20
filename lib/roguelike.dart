@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class _RoguelikeState extends State<Roguelike> {
           right: 30,
           child: CrossButtons(
             onTop: (direction) {
-              //widget.terminal.changePosition(direction);
+              playerInput(direction);
             },
           ))
     ])));
@@ -57,4 +58,28 @@ class _RoguelikeState extends State<Roguelike> {
       setState(() {});
     }
   }
+
+  void tryToMovePlayer({required int deltaX, required int deltaY}){
+    final player = widget.gameState.world.player;
+    player.x = min(columns - 1, max(0, player.x + deltaX));
+    player.y = min(rows - 1, max(0, player.y + deltaY));
+  }
+
+  void playerInput(Direction direction) {
+    switch (direction) {
+      case Direction.up:
+        tryToMovePlayer(deltaX: 0, deltaY: -1);
+        break;
+      case Direction.down:
+        tryToMovePlayer(deltaX: 0, deltaY: 1);
+        break;
+      case Direction.left:
+        tryToMovePlayer(deltaX: -1, deltaY: 0);
+        break;
+      case Direction.right:
+        tryToMovePlayer(deltaX: 1, deltaY: 0);
+        break;
+    }
+  }
+
 }

@@ -28,7 +28,7 @@ class RoguelikeToolkit {
 
   static Future<ui.Image> _loadImage() async {
     final ByteData data =
-        await rootBundle.load('assets/images/terminal8x8.png');
+        await rootBundle.load(terminalImagePath);
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(),
       targetHeight: 128,
