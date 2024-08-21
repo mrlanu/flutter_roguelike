@@ -1,16 +1,35 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:flutter_roguelike/rltk/rltk.dart';
 
 import '../const/const.dart';
+import '../game_state.dart';
 
 
-class RoguelikeToolkitView extends StatelessWidget {
+class RoguelikeToolkitView extends StatefulWidget {
   const RoguelikeToolkitView(
-      {super.key, required this.toolkit});
+      {super.key, required this.gameState, required this.ctx});
 
-  final RoguelikeToolkit toolkit;
+  final GameState gameState;
+  final RoguelikeToolkit ctx;
+
+  @override
+  State<RoguelikeToolkitView> createState() => _RoguelikeToolkitViewState();
+}
+
+class _RoguelikeToolkitViewState extends State<RoguelikeToolkitView> {
+
+  late Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    final ms = (1000 / fps).floor();
+    _timer = Timer.periodic(Duration(milliseconds: ms), _tick);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +44,27 @@ class RoguelikeToolkitView extends StatelessWidget {
           child: SizedBox(
             child: CustomPaint(
               painter: TilePainter(
-                image: toolkit.image,
-                offsets: toolkit.buffer[index],
+                image: widget.ctx.image,
+                offsets: widget.ctx.buffer[index],
               ),
             ),
           ),
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Clean up the timer when the widget is removed
+    super.dispose();
+  }
+
+  void _tick(Timer t) {
+    widget.gameState.tick(ctx: widget.ctx);
+    if(mounted){
+      setState(() {});
+    }
   }
 }
 
