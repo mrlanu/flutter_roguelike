@@ -39,10 +39,10 @@ class RoguelikeToolkit {
   }
 
   List<(Offset, Offset)> clx() =>
-      List.filled(rows * columns, (const Offset(0.0, 0.0), const Offset(8.0, 8.0)));
+      _buffer = List.filled(rows * columns, (const Offset(0.0, 0.0), const Offset(8.0, 8.0)));
 
   void set({required String symbol, required int x, required int y}) {
-    List<(Offset, Offset)> newBuffer = clx();
+    List<(Offset, Offset)> newBuffer = [..._buffer];
     final startIndex = _getIndexByXY(x: x, y: y);
     final i = symbol.runes.first;
     newBuffer[startIndex] = _symbols[i];

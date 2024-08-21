@@ -1,21 +1,42 @@
 import 'dart:math';
 
+import 'package:dartemis/dartemis.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_roguelike/models/models.dart';
 import 'package:flutter_roguelike/rl_state.dart';
 import 'package:flutter_roguelike/widgets/cross_buttons.dart';
 
 import 'const/const.dart';
+import 'ecs/ecs.dart';
 import 'game_state.dart';
 import 'rltk/rltk.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final ctx = await RoguelikeToolkit.instance();
-  final rlState = RoguelikeGameState();
+  final player = Player(x: 5, y: 5, symbol: '@');
+  final world = initializeWorld(ctx: ctx);
+  final rlState = RoguelikeGameState(world: world, player: player);
+
   runApp(Roguelike(
     ctx: ctx,
     gameState: rlState,
   ));
+}
+
+World initializeWorld({required RoguelikeToolkit ctx}) {
+  final world = World();
+
+  for (var i = 0; i < 5; i++) {
+    world.createEntity([Position(i * 4, 10), Renderable('#'), LeftMover()]);
+  }
+  world
+    ..addSystem(LeftWalkerSystem())
+    ..addSystem(RenderSystem(ctx));
+
+  world.initialize();
+  return world;
 }
 
 class Roguelike extends StatelessWidget {
@@ -68,7 +89,7 @@ class Roguelike extends StatelessWidget {
   }
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
-    final player = gameState.world.player;
+    final player = gameState.player;
     player.x = min(columns - 1, max(0, player.x + deltaX));
     player.y = min(rows - 1, max(0, player.y + deltaY));
   }
