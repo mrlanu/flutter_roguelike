@@ -43,7 +43,7 @@ class RoguelikeToolkit {
 
   void set({required String symbol, required int x, required int y}) {
     List<(Offset, Offset)> newBuffer = [..._buffer];
-    final startIndex = _getIndexByXY(x: x, y: y);
+    final startIndex = getIndexByXY(x: x, y: y);
     final i = symbol.runes.first;
     newBuffer[startIndex] = _symbols[i];
     _buffer = newBuffer;
@@ -51,7 +51,7 @@ class RoguelikeToolkit {
 
   void printText({required String text, required int x, required int y}) {
     List<(Offset, Offset)> newBuffer = clx();
-    final startIndex = _getIndexByXY(x: x, y: y);
+    final startIndex = getIndexByXY(x: x, y: y);
     for (int i = 0; i < text.length; i++) {
       if (startIndex + i < newBuffer.length) {
         final index = text[i].runes.first;
@@ -61,7 +61,7 @@ class RoguelikeToolkit {
     _buffer = newBuffer;
   }
 
-  static int _getIndexByXY({required int x, required int y}) => y * columns + x;
+  static int getIndexByXY({required int x, required int y}) => y * columns + x;
 
   static List<(ui.Offset, ui.Offset)> fillSymbols() {
     List<(ui.Offset, ui.Offset)> result = [];
