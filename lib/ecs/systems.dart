@@ -21,7 +21,7 @@ class RenderSystem extends EntityProcessingSystem {
   void processEntity(int entity) {
     Position position = positionMapper[entity];
     Renderable renderable = renderableMapper[entity];
-    ctx.set(symbol: renderable.glyph, x: position.x, y: position.y);
+    ctx.set(symbol: renderable.glyph, color: renderable.color, x: position.x, y: position.y);
   }
 }
 

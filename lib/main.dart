@@ -29,7 +29,11 @@ World initializeWorld({required RoguelikeToolkit ctx}) {
   final world = World();
 
   for (var i = 0; i < 5; i++) {
-    world.createEntity([Position(i * 4, 10), Renderable('#'), LeftMover()]);
+    world.createEntity([
+      Position(i * 4, 10),
+      Renderable('#', color: Colors.green),
+      LeftMover()
+    ]);
   }
   world
     ..addSystem(LeftWalkerSystem())

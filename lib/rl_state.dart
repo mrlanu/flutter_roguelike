@@ -1,4 +1,5 @@
 import 'package:dartemis/dartemis.dart';
+import 'package:flutter/material.dart';
 
 import 'game_state.dart';
 import 'models/models.dart';
@@ -23,8 +24,8 @@ class RoguelikeGameState extends GameState {
   @override
   void tick({required RoguelikeToolkit ctx}) {
     ctx.clx();
-    ctx.set(symbol: _player.symbol, x: _player.x, y: _player.y);
+    ctx.set(symbol: _player.symbol, color: Colors.yellowAccent, x: _player.x, y: _player.y);
     _world.process();
-    //ctx.printText(text: 'Hello Rogualike', x: 3, y: 15);
+    //ctx.printText(text: 'Hello Rogualike', color: Colors.yellowAccent, x: 3, y: 15);
   }
 }

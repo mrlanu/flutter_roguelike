@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:dartemis/dartemis.dart';
+import 'package:flutter/material.dart';
 
 class Position extends Component {
   int x, y;
@@ -8,8 +11,9 @@ class Position extends Component {
 
 class Renderable extends Component {
   String glyph;
+  Color color;
 
-  Renderable(this.glyph);
+  Renderable(this.glyph, {this.color = Colors.white});
 }
 
 class LeftMover extends Component{}

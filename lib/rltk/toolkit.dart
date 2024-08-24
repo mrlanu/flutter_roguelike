@@ -1,22 +1,23 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../const/const.dart';
+import '../models/models.dart';
 
 class RoguelikeToolkit {
   RoguelikeToolkit._internal({
     required this.image,
-  }) : _buffer = List.filled(
-            rows * columns, (const Offset(0.0, 0.0), const Offset(8.0, 8.0)));
+  }) : _buffer = List.filled(rows * columns, const Tile());
 
   static RoguelikeToolkit? _instance;
 
   final ui.Image image;
-  List<(Offset, Offset)> _buffer;
-  final List<(Offset, Offset)> _symbols = fillSymbols();
+  List<Tile> _buffer;
+  final List<Tile> _symbols = fillSymbols();
 
-  List<(Offset, Offset)> get buffer => _buffer;
+  List<Tile> get buffer => _buffer;
 
   static Future<RoguelikeToolkit> instance() async {
     if (_instance == null) {
@@ -27,8 +28,7 @@ class RoguelikeToolkit {
   }
 
   static Future<ui.Image> _loadImage() async {
-    final ByteData data =
-        await rootBundle.load(terminalImagePath);
+    final ByteData data = await rootBundle.load(terminalImagePath);
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(),
       targetHeight: 128,
@@ -38,24 +38,35 @@ class RoguelikeToolkit {
     return frame.image;
   }
 
-  List<(Offset, Offset)> clx() =>
-      _buffer = List.filled(rows * columns, (const Offset(0.0, 0.0), const Offset(8.0, 8.0)));
+  List<Tile> clx() => _buffer = List.filled(rows * columns, const Tile());
 
-  void set({required String symbol, required int x, required int y}) {
-    List<(Offset, Offset)> newBuffer = [..._buffer];
+  void set(
+      {required String symbol,
+      ui.Color color = Colors.transparent,
+      required int x,
+      required int y}) {
+    List<Tile> newBuffer = [..._buffer];
     final startIndex = getIndexByXY(x: x, y: y);
     final i = symbol.runes.first;
-    newBuffer[startIndex] = _symbols[i];
+    final tile = _symbols[i];
+    newBuffer[startIndex] = Tile(
+        topLeft: tile.topLeft, bottomRight: tile.bottomRight, color: color);
     _buffer = newBuffer;
   }
 
-  void printText({required String text, required int x, required int y}) {
-    List<(Offset, Offset)> newBuffer = clx();
+  void printText(
+      {required String text,
+      ui.Color color = Colors.transparent,
+      required int x,
+      required int y}) {
+    List<Tile> newBuffer = clx();
     final startIndex = getIndexByXY(x: x, y: y);
     for (int i = 0; i < text.length; i++) {
       if (startIndex + i < newBuffer.length) {
         final index = text[i].runes.first;
-        newBuffer[startIndex + i] = _symbols[index];
+        final tile = _symbols[index];
+        newBuffer[startIndex + i] = Tile(
+            topLeft: tile.topLeft, bottomRight: tile.bottomRight, color: color);
       }
     }
     _buffer = newBuffer;
@@ -63,13 +74,14 @@ class RoguelikeToolkit {
 
   static int getIndexByXY({required int x, required int y}) => y * columns + x;
 
-  static List<(ui.Offset, ui.Offset)> fillSymbols() {
-    List<(ui.Offset, ui.Offset)> result = [];
+  static List<Tile> fillSymbols() {
+    List<Tile> result = [];
     for (var row = 0; row < 16; row++) {
       for (var column = 0; column < 16; column++) {
         ui.Offset topLeft = ui.Offset(column * 8.0, row * 8.0);
         ui.Offset bottomRight = ui.Offset((column + 1) * 8.0, (row + 1) * 8.0);
-        result.add((topLeft, bottomRight));
+        result.add(Tile(
+            topLeft: topLeft, bottomRight: bottomRight, color: Colors.white));
       }
     }
     return result;
