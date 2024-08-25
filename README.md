@@ -1,16 +1,21 @@
-# flutter_roguelike
+# Roguelike in Flutter
 
-A new Flutter project.
+### Every year, the community over at - [r/roguelikedev](https://www.reddit.com/r/roguelikedev/new/) runs a "Tutorial Tuesday" series 
+### that encourages new programmers to dive into the world of roguelike development.
 
-## Getting Started
+### Many different programming languages are typically represented.
+### I decided to try my hand at implementing a roguelike using - [Flutter](https://flutter.dev/)
 
-This project is a starting point for a Flutter application.
+## How to run
 
-A few resources to get you started if this is your first Flutter project:
+First, you'll need to clone the repository using the following command in your terminal:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```sh
+git clone https://github.com/mrlanu/flutter_roguelike.git
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Then, you'll need to start the mobile app by running the following command in the project folder:
+
+```sh
+flutter run
+```
