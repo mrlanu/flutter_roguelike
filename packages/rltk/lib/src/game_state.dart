@@ -1,7 +1,5 @@
 import 'package:dartemis/dartemis.dart';
-import 'package:flutter_roguelike/models/models.dart';
-
-import 'rltk/rltk.dart';
+import 'package:rltk/src/rltk.dart';
 
 abstract class GameState {
   void tick({required RoguelikeToolkit ctx});

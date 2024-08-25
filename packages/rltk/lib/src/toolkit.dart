@@ -2,17 +2,21 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rltk/src/const/const.dart';
 
-import '../const/const.dart';
-import '../models/models.dart';
+import 'package:rltk/src/models/models.dart';
+
 
 class RoguelikeToolkit {
   RoguelikeToolkit._internal({
     required this.image,
-  }) : _buffer = List.filled(Constants.rows * Constants.columns, const Tile());
+    this.rows = 82, this.columns = 40,
+  }) : _buffer = List.filled(rows * columns, const Tile());
 
   static RoguelikeToolkit? _instance;
 
+  final int rows;
+  final int columns;
   final ui.Image image;
   List<Tile> _buffer;
   final List<Tile> _symbols = fillSymbols();
@@ -28,25 +32,25 @@ class RoguelikeToolkit {
   }
 
   static Future<ui.Image> _loadImage() async {
-    final ByteData data = await rootBundle.load(Constants.terminalImagePath);
+    final data = await rootBundle.load(ConstantsRltk.terminalImagePath);
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(),
       targetHeight: 128,
       targetWidth: 128,
     );
-    var frame = await codec.getNextFrame();
+    final frame = await codec.getNextFrame();
     return frame.image;
   }
 
-  List<Tile> clx() => _buffer = List.filled(Constants.rows * Constants.columns, const Tile());
+  List<Tile> clx() => _buffer = List.filled(rows * columns, const Tile());
 
   void set(
       {required String symbol,
       ui.Color color = Colors.transparent,
       required int x,
-      required int y}) {
-    List<Tile> newBuffer = [..._buffer];
-    final startIndex = getIndexByXY(x: x, y: y);
+      required int y,}) {
+    final newBuffer = <Tile>[..._buffer];
+    final startIndex = getIndexByXY(x: x, y: y,);
     final i = symbol.runes.first;
     final tile = _symbols[i];
     newBuffer[startIndex] = Tile(
@@ -58,10 +62,10 @@ class RoguelikeToolkit {
       {required String text,
       ui.Color color = Colors.transparent,
       required int x,
-      required int y}) {
-    List<Tile> newBuffer = clx();
-    final startIndex = getIndexByXY(x: x, y: y);
-    for (int i = 0; i < text.length; i++) {
+      required int y,}) {
+    final newBuffer = clx();
+    final startIndex = getIndexByXY(x: x, y: y,);
+    for (var i = 0; i < text.length; i++) {
       if (startIndex + i < newBuffer.length) {
         final index = text[i].runes.first;
         final tile = _symbols[index];
@@ -73,38 +77,40 @@ class RoguelikeToolkit {
   }
 
   void drawMap(List<TileType> map) {
-    int x = 0;
-    int y = 0;
+    var x = 0;
+    var y = 0;
 
-    for (TileType tile in map) {
+    for (final tile in map) {
       switch (tile) {
         case TileType.floor:
           set(symbol: ' ', color: Colors.grey, x: x, y: y);
-          break;
         case TileType.wall:
           set(symbol: '#', color: Colors.green, x: x, y: y);
-          break;
       }
 
       // Move the coordinates
       x += 1;
-      if (x > Constants.columns - 1) {
+      if (x > columns - 1) {
         x = 0;
         y += 1;
       }
     }
   }
 
-  static int getIndexByXY({required int x, required int y}) => y * Constants.columns + x;
+  int getIndexByXY({required int x, required int y}) => y * columns + x;
+
+  static int getIndexByXy(
+      {required int x, required int y, required int columns,}) =>
+      y * columns + x;
 
   static List<Tile> fillSymbols() {
-    List<Tile> result = [];
+    final result = <Tile>[];
     for (var row = 0; row < 16; row++) {
       for (var column = 0; column < 16; column++) {
-        ui.Offset topLeft = ui.Offset(column * 8.0, row * 8.0);
-        ui.Offset bottomRight = ui.Offset((column + 1) * 8.0, (row + 1) * 8.0);
+        final topLeft = ui.Offset(column * 8.0, row * 8.0);
+        final bottomRight = ui.Offset((column + 1) * 8.0, (row + 1) * 8.0);
         result.add(Tile(
-            topLeft: topLeft, bottomRight: bottomRight, color: Colors.white));
+            topLeft: topLeft, bottomRight: bottomRight, color: Colors.white,),);
       }
     }
     return result;

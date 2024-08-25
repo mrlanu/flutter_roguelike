@@ -1,9 +1,6 @@
-import 'package:dartemis/dartemis.dart';
 import 'package:flutter/material.dart';
+import 'package:rltk/rltk.dart';
 
-import 'game_state.dart';
-import 'models/models.dart';
-import 'rltk/rltk.dart';
 
 class RoguelikeGameState extends GameState {
   final World _world;

@@ -1,11 +1,8 @@
 import 'dart:math';
-
-import 'package:dartemis/dartemis.dart';
+import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
 import 'ecs/ecs.dart';
-import 'models/models.dart';
-import 'rltk/toolkit.dart';
 
 class Init {
   static World initializeWorld({required RoguelikeToolkit ctx}) {
@@ -24,14 +21,20 @@ class Init {
 
     // Make the boundaries walls
     for (int x = 0; x < Constants.columns; x++) {
-      map[RoguelikeToolkit.getIndexByXY(x: x, y: 0)] = TileType.wall;
-      map[RoguelikeToolkit.getIndexByXY(x: x, y: Constants.rows - 1)] =
-          TileType.wall;
+      map[RoguelikeToolkit.getIndexByXy(
+          x: x, y: 0, columns: Constants.columns)] = TileType.wall;
+      map[RoguelikeToolkit.getIndexByXy(
+          x: x,
+          y: Constants.rows - 1,
+          columns: Constants.columns)] = TileType.wall;
     }
     for (int y = 0; y < Constants.rows; y++) {
-      map[RoguelikeToolkit.getIndexByXY(x: 0, y: y)] = TileType.wall;
-      map[RoguelikeToolkit.getIndexByXY(x: Constants.columns - 1, y: y)] =
-          TileType.wall;
+      map[RoguelikeToolkit.getIndexByXy(
+          x: 0, y: y, columns: Constants.columns)] = TileType.wall;
+      map[RoguelikeToolkit.getIndexByXy(
+          x: Constants.columns - 1,
+          y: y,
+          columns: Constants.columns)] = TileType.wall;
     }
 
     // Randomly place walls inside the map
@@ -40,10 +43,13 @@ class Init {
     for (int i = 0; i < 200; i++) {
       int x = rng.nextInt(Constants.columns - 1) + 1;
       int y = rng.nextInt(Constants.rows - 1) + 1;
-      int idx = RoguelikeToolkit.getIndexByXY(x: x, y: y);
+      int idx =
+          RoguelikeToolkit.getIndexByXy(x: x, y: y, columns: Constants.columns);
       if (idx !=
-          RoguelikeToolkit.getIndexByXY(
-              x: Constants.playerX, y: Constants.playerY)) {
+          RoguelikeToolkit.getIndexByXy(
+              x: Constants.playerX,
+              y: Constants.playerY,
+              columns: Constants.columns)) {
         map[idx] = TileType.wall;
       }
     }

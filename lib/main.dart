@@ -1,14 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_roguelike/models/models.dart';
 import 'package:flutter_roguelike/rl_state.dart';
 import 'package:flutter_roguelike/widgets/cross_buttons.dart';
+import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
-import 'game_state.dart';
 import 'init.dart';
-import 'rltk/rltk.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,7 +75,7 @@ class Roguelike extends StatelessWidget {
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
     final player = gameState.player;
-    final destinationIdx = RoguelikeToolkit.getIndexByXY(
+    final destinationIdx = ctx.getIndexByXY(
         x: player.x + deltaX, y: player.y + deltaY);
     if (gameState.map[destinationIdx] != TileType.wall) {
       player.x = min(Constants.columns - 1, max(0, player.x + deltaX));

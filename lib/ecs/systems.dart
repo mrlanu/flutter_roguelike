@@ -1,8 +1,7 @@
-import 'package:dartemis/dartemis.dart';
 import 'package:flutter_roguelike/const/const.dart';
+import 'package:rltk/rltk.dart';
 
 import 'components.dart';
-import '../rltk/rltk.dart';
 
 class RenderSystem extends EntityProcessingSystem {
   late Mapper<Position> positionMapper;
