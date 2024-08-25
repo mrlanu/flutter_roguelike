@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 class CrossButtons extends StatefulWidget {
@@ -19,7 +17,7 @@ class _CrossButtonsState extends State<CrossButtons> {
   bool isMoving = false;
   Direction direction = Direction.right;
 
-  void startMoving(Direction direction) {
+  void _startMoving(Direction direction) {
     isMoving = true;
     this.direction = direction;
     _keepMoving();
@@ -32,7 +30,7 @@ class _CrossButtonsState extends State<CrossButtons> {
     }
   }
 
-  void stopMoving() {
+  void _stopMoving() {
     isMoving = false;
   }
 
@@ -48,8 +46,8 @@ class _CrossButtonsState extends State<CrossButtons> {
             left: 75,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.up),
-              onLongPressStart: (_) => startMoving(Direction.up),
-              onLongPressEnd: (_) => stopMoving(),
+              onLongPressStart: (_) => _startMoving(Direction.up),
+              onLongPressEnd: (_) => _stopMoving(),
               child: const Icon(Icons.arrow_circle_up_outlined, size: 30, color: Colors.lightBlueAccent,),
             ),
           ),
@@ -58,8 +56,8 @@ class _CrossButtonsState extends State<CrossButtons> {
             left: 75,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.down),
-              onLongPressStart: (_) => startMoving(Direction.down),
-              onLongPressEnd: (_) => stopMoving(),
+              onLongPressStart: (_) => _startMoving(Direction.down),
+              onLongPressEnd: (_) => _stopMoving(),
               child: const Icon(Icons.arrow_circle_down_outlined,size: 30, color: Colors.lightBlueAccent,),
             ),
           ),
@@ -68,8 +66,8 @@ class _CrossButtonsState extends State<CrossButtons> {
             top: 75,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.left),
-              onLongPressStart: (_) => startMoving(Direction.left),
-              onLongPressEnd: (_) => stopMoving(),
+              onLongPressStart: (_) => _startMoving(Direction.left),
+              onLongPressEnd: (_) => _stopMoving(),
               child: const Icon(Icons.arrow_circle_left_outlined, size: 30, color: Colors.lightBlueAccent,),
             ),
           ),
@@ -78,8 +76,8 @@ class _CrossButtonsState extends State<CrossButtons> {
             top: 75,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.right),
-              onLongPressStart: (_) => startMoving(Direction.right),
-              onLongPressEnd: (_) => stopMoving(),
+              onLongPressStart: (_) => _startMoving(Direction.right),
+              onLongPressEnd: (_) => _stopMoving(),
               child: const Icon(Icons.arrow_circle_right_outlined, size: 30, color: Colors.lightBlueAccent,),
             ),
           ),
