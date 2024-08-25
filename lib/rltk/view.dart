@@ -26,7 +26,7 @@ class _RoguelikeToolkitViewState extends State<RoguelikeToolkitView> {
   @override
   void initState() {
     super.initState();
-    final ms = (1000 / fps).floor();
+    final ms = (1000 / Constants.fps).floor();
     _timer = Timer.periodic(Duration(milliseconds: ms), _tick);
   }
 
@@ -66,15 +66,15 @@ class GridPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final tileSize = size.width / columns;
+    final tileSize = size.width / Constants.columns;
     Paint backgroundPaint = Paint()..color = Colors.black; // Set the background color
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
-    for (var r = 0; r < rows; r++) {
-      for (var c = 0; c < columns; c++) {
+    for (var r = 0; r < Constants.rows; r++) {
+      for (var c = 0; c < Constants.columns; c++) {
         final Rect destRect = Rect.fromPoints(
             Offset(c * tileSize, r * tileSize),
             Offset(c * tileSize + tileSize, r * tileSize + tileSize));
-        final i = _getIndexByXY(x: c, y: r);
+        final i = RoguelikeToolkit.getIndexByXY(x: c, y: r);
         final Rect srcRect = Rect.fromPoints(tiles[i].topLeft, tiles[i].bottomRight);
         final color = ColorFilter.mode(
           tiles[i].color, // Apply a red tint with some transparency
@@ -87,6 +87,4 @@ class GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-
-  int _getIndexByXY({required int x, required int y}) => y * columns + x;
 }

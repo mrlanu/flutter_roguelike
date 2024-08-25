@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+enum TileType{
+  wall, floor,
+}
+
 class Tile {
   final Offset topLeft;
   final Offset bottomRight;

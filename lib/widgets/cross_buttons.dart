@@ -26,7 +26,7 @@ class _CrossButtonsState extends State<CrossButtons> {
   void _keepMoving() async {
     while (isMoving) {
       widget.onTop!(direction);
-      await Future.delayed(const Duration(milliseconds: 50)); // Adjust for movement speed
+      await Future.delayed(const Duration(milliseconds: 30)); // Adjust for movement speed
     }
   }
 
@@ -48,7 +48,7 @@ class _CrossButtonsState extends State<CrossButtons> {
               onTap: () => widget.onTop!(Direction.up),
               onLongPressStart: (_) => _startMoving(Direction.up),
               onLongPressEnd: (_) => _stopMoving(),
-              child: const Icon(Icons.arrow_circle_up_outlined, size: 30, color: Colors.lightBlueAccent,),
+              child: const Icon(Icons.arrow_circle_up,size: 30, color: Colors.white,),
             ),
           ),
           Positioned(
@@ -58,7 +58,7 @@ class _CrossButtonsState extends State<CrossButtons> {
               onTap: () => widget.onTop!(Direction.down),
               onLongPressStart: (_) => _startMoving(Direction.down),
               onLongPressEnd: (_) => _stopMoving(),
-              child: const Icon(Icons.arrow_circle_down_outlined,size: 30, color: Colors.lightBlueAccent,),
+              child: const Icon(Icons.arrow_circle_down,size: 30, color: Colors.white,),
             ),
           ),
           Positioned(
@@ -68,7 +68,7 @@ class _CrossButtonsState extends State<CrossButtons> {
               onTap: () => widget.onTop!(Direction.left),
               onLongPressStart: (_) => _startMoving(Direction.left),
               onLongPressEnd: (_) => _stopMoving(),
-              child: const Icon(Icons.arrow_circle_left_outlined, size: 30, color: Colors.lightBlueAccent,),
+              child: const Icon(Icons.arrow_circle_left,size: 30, color: Colors.white,),
             ),
           ),
           Positioned(
@@ -78,7 +78,7 @@ class _CrossButtonsState extends State<CrossButtons> {
               onTap: () => widget.onTop!(Direction.right),
               onLongPressStart: (_) => _startMoving(Direction.right),
               onLongPressEnd: (_) => _stopMoving(),
-              child: const Icon(Icons.arrow_circle_right_outlined, size: 30, color: Colors.lightBlueAccent,),
+              child: const Icon(Icons.arrow_circle_right, size: 30, color: Colors.white,),
             ),
           ),
         ],

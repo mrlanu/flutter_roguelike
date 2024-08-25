@@ -41,6 +41,6 @@ class LeftWalkerSystem extends EntityProcessingSystem {
   void processEntity(int entity) {
     Position position = positionMapper[entity];
     position.x -= 1;
-    if (position.x < 0) { position.x = columns - 1; }
+    if (position.x < 0) { position.x = Constants.columns - 1; }
   }
 }

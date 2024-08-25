@@ -9,7 +9,7 @@ import '../models/models.dart';
 class RoguelikeToolkit {
   RoguelikeToolkit._internal({
     required this.image,
-  }) : _buffer = List.filled(rows * columns, const Tile());
+  }) : _buffer = List.filled(Constants.rows * Constants.columns, const Tile());
 
   static RoguelikeToolkit? _instance;
 
@@ -28,7 +28,7 @@ class RoguelikeToolkit {
   }
 
   static Future<ui.Image> _loadImage() async {
-    final ByteData data = await rootBundle.load(terminalImagePath);
+    final ByteData data = await rootBundle.load(Constants.terminalImagePath);
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(),
       targetHeight: 128,
@@ -38,7 +38,7 @@ class RoguelikeToolkit {
     return frame.image;
   }
 
-  List<Tile> clx() => _buffer = List.filled(rows * columns, const Tile());
+  List<Tile> clx() => _buffer = List.filled(Constants.rows * Constants.columns, const Tile());
 
   void set(
       {required String symbol,
@@ -72,7 +72,30 @@ class RoguelikeToolkit {
     _buffer = newBuffer;
   }
 
-  static int getIndexByXY({required int x, required int y}) => y * columns + x;
+  void drawMap(List<TileType> map) {
+    int x = 0;
+    int y = 0;
+
+    for (TileType tile in map) {
+      switch (tile) {
+        case TileType.floor:
+          set(symbol: ' ', color: Colors.grey, x: x, y: y);
+          break;
+        case TileType.wall:
+          set(symbol: '#', color: Colors.green, x: x, y: y);
+          break;
+      }
+
+      // Move the coordinates
+      x += 1;
+      if (x > Constants.columns - 1) {
+        x = 0;
+        y += 1;
+      }
+    }
+  }
+
+  static int getIndexByXY({required int x, required int y}) => y * Constants.columns + x;
 
   static List<Tile> fillSymbols() {
     List<Tile> result = [];
