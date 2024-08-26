@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_roguelike/models/dungeon.dart';
 import 'package:flutter_roguelike/rl_state.dart';
 import 'package:flutter_roguelike/widgets/cross_buttons.dart';
 import 'package:rltk/rltk.dart';
@@ -13,11 +14,10 @@ Future<void> main() async {
 
   final ctx = await RoguelikeToolkit.instance();
   final world = Init.initializeWorld(ctx: ctx);
-  final (rooms, map) = Init.newMapRoomsAndCorridors();
-  final (playerX, playerY) = rooms[0].center();
-  final player =
-  Player(x: playerX, y: playerY, symbol: '@');
-  final rlState = RoguelikeGameState(world: world, player: player, map: map);
+  final dungeon = Dungeon.roomsAndCorridors();
+  final (playerX, playerY) = dungeon.rooms[0].center();
+  final player = Player(x: playerX, y: playerY, symbol: '@');
+  final rlState = RoguelikeGameState(world: world, player: player, map: dungeon.tiles);
 
   runApp(Roguelike(
     ctx: ctx,
