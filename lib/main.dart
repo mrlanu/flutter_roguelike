@@ -12,10 +12,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final ctx = await RoguelikeToolkit.instance();
-  final player =
-      Player(x: Constants.playerX, y: Constants.playerY, symbol: '@');
   final world = Init.initializeWorld(ctx: ctx);
-  final map = Init.newMap();
+  final (rooms, map) = Init.newMapRoomsAndCorridors();
+  final (playerX, playerY) = rooms[0].center();
+  final player =
+  Player(x: playerX, y: playerY, symbol: '@');
   final rlState = RoguelikeGameState(world: world, player: player, map: map);
 
   runApp(Roguelike(
