@@ -7,6 +7,7 @@ import 'package:flutter_roguelike/widgets/cross_buttons.dart';
 import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
+import 'ecs/components.dart';
 import 'init.dart';
 
 Future<void> main() async {
@@ -15,9 +16,13 @@ Future<void> main() async {
   final ctx = await RoguelikeToolkit.instance();
   final world = Init.initializeWorld(ctx: ctx);
   final dungeon = Dungeon.roomsAndCorridors();
+
   final (playerX, playerY) = dungeon.rooms[0].center();
-  final player = Player(x: playerX, y: playerY, symbol: '@');
-  final rlState = RoguelikeGameState(world: world, player: player, map: dungeon.tiles);
+  final player = world.createEntity(
+      [Position(playerX, playerY), Renderable('@', color: Colors.yellow)]);
+
+  final rlState =
+      RoguelikeGameState(world: world, playerId: player, map: dungeon.tiles);
 
   runApp(Roguelike(
     ctx: ctx,
@@ -76,11 +81,12 @@ class Roguelike extends StatelessWidget {
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
     final player = gameState.player;
-    final destinationIdx = ctx.getIndexByXY(
-        x: player.x + deltaX, y: player.y + deltaY);
+    final Position position = Mapper<Position>(gameState.world)[player];
+    final destinationIdx =
+        ctx.getIndexByXY(x: position.x + deltaX, y: position.y + deltaY);
     if (gameState.map[destinationIdx] != TileType.wall) {
-      player.x = min(Constants.columns - 1, max(0, player.x + deltaX));
-      player.y = min(Constants.rows - 1, max(0, player.y + deltaY));
+      position.x = min(Constants.columns - 1, max(0, position.x + deltaX));
+      position.y = min(Constants.rows - 1, max(0, position.y + deltaY));
     }
   }
 }
