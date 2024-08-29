@@ -21,8 +21,9 @@ class Renderable extends Component {
 class Viewshed extends Component {
   List<Point<int>> visibleTiles;
   int range;
+  bool dirty;
 
-  Viewshed(this.visibleTiles, this.range);
+  Viewshed(this.visibleTiles, this.range, this.dirty);
 }
 
 class LeftMover extends Component{}

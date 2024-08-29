@@ -12,6 +12,9 @@ class Dungeon implements BaseMap{
   final int width;
   final int height;
 
+  List<bool> revealedTiles = [];
+  List<bool> visibleTiles = [];
+
   Dungeon._(this.width, this.height);
 
   factory Dungeon.roomsAndCorridors(int width, int height) {
@@ -19,6 +22,11 @@ class Dungeon implements BaseMap{
     final dungeon = Dungeon._(width, height);
     dungeon.tiles = List<TileType>.filled(
         Constants.columns * Constants.rows, TileType.wall);
+
+    dungeon.revealedTiles = List<bool>.filled(
+        Constants.columns * Constants.rows, false);
+    dungeon.visibleTiles = List<bool>.filled(
+        Constants.columns * Constants.rows, false);
 
     dungeon.rooms = <Rect>[];
     const int maxRooms = 30;
@@ -105,6 +113,8 @@ class Dungeon implements BaseMap{
       }
     }
   }
+
+  int getIndexByXY({required int x, required int y}) => y * width + x;
 
   @override
   bool isOpaque(int idx) => tiles[idx] == TileType.wall;

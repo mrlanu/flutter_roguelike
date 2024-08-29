@@ -6,6 +6,10 @@
 ### Many different programming languages are typically represented.
 ### I decided to try my hand at implementing a roguelike using - [Flutter](https://flutter.dev/)
 
+<p align="center">
+    <img src="assets/screenshots/01.png" alt="MyPic" width="170">
+</p>
+
 ## How to run
 
 First, you'll need to clone the repository using the following command in your terminal:

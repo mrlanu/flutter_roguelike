@@ -28,15 +28,19 @@ class DrawMapSystem extends EntityProcessingSystem {
     var x = 0;
     var y = 0;
 
-    for (final tile in dungeon.tiles) {
-      final pt = Point(x, y);
-      if(viewshed.visibleTiles.contains(pt)){
-        switch (tile) {
+    for (var i = 0; i < dungeon.tiles.length; i++) {
+      if (dungeon.revealedTiles[i]) {
+        var fg = Colors.yellow;
+        var symbol = '';
+        switch (dungeon.tiles[i]) {
           case TileType.floor:
-            ctx.set(symbol: '.', color: Colors.grey, x: x, y: y);
+            symbol = '.';
+            fg = Colors.grey;
           case TileType.wall:
-            ctx.set(symbol: '#', color: Colors.green, x: x, y: y);
+            symbol = '#';
         }
+        if (!dungeon.visibleTiles[i]) { fg = Colors.grey; }
+        ctx.set(symbol: symbol, color: fg, x: x, y: y);
       }
 
       // Move the coordinates
@@ -92,14 +96,27 @@ class VisibilitySystem extends EntityProcessingSystem {
   void processEntity(int entity) {
     Position position = positionMapper[entity];
     Viewshed viewshed = viewshedMapper[entity];
-    viewshed.visibleTiles.clear();
-    viewshed.visibleTiles = fieldOfView(
-        start: Point(position.x, position.y), range: viewshed.range, map: map);
-    viewshed.visibleTiles.removeWhere((p) =>
-        p.x < 0 ||
-        p.x >= Constants.columns ||
-        p.y < 0 ||
-        p.y >= Constants.rows);
+    if (viewshed.dirty) {
+      viewshed.dirty = false;
+      viewshed.visibleTiles.clear();
+      viewshed.visibleTiles = fieldOfView(
+          start: Point(position.x, position.y),
+          range: viewshed.range,
+          map: map);
+      viewshed.visibleTiles.removeWhere((p) =>
+          p.x < 0 ||
+          p.x >= Constants.columns ||
+          p.y < 0 ||
+          p.y >= Constants.rows);
+      for(var i = 0; i < map.visibleTiles.length; i++){
+        map.visibleTiles[i] = false;
+      }
+      for (final pt in viewshed.visibleTiles) {
+        final idx = map.getIndexByXY(x: pt.x, y: pt.y);
+        map.revealedTiles[idx] = true;
+        map.visibleTiles[idx] = true;
+      }
+    }
   }
 }
 

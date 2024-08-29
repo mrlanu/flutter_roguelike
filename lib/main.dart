@@ -21,18 +21,13 @@ Future<void> main() async {
   final player = world.createEntity([
     Player(),
     Position(playerX, playerY),
-    Renderable(glyph: '@', color: Colors.yellow),
-    Viewshed([], 8)
+    Renderable(glyph: '@', color: Colors.red),
+    Viewshed([], 8, true)
   ]);
 
   final rlState =
       RoguelikeGameState(world: world, playerId: player, map: dungeon.tiles);
 
-  /*final br = bresenham(0, 1, 6, 4);
-  for (var element in br) {
-    print('x: ${element.x}, y: ${element.y}');
-  }
-*/
   runApp(Roguelike(
     ctx: ctx,
     gameState: rlState,
@@ -91,11 +86,13 @@ class Roguelike extends StatelessWidget {
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
     final player = gameState.player;
     final Position position = Mapper<Position>(gameState.world)[player];
+    final Viewshed viewshed = Mapper<Viewshed>(gameState.world)[player];
     final destinationIdx =
         ctx.getIndexByXY(x: position.x + deltaX, y: position.y + deltaY);
     if (gameState.map[destinationIdx] != TileType.wall) {
       position.x = min(Constants.columns - 1, max(0, position.x + deltaX));
       position.y = min(Constants.rows - 1, max(0, position.y + deltaY));
+      viewshed.dirty = true;
     }
   }
 }
