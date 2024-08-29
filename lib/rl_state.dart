@@ -27,7 +27,7 @@ class RoguelikeGameState extends GameState {
   @override
   void tick({required RoguelikeToolkit ctx}) {
     ctx.clx();
-    ctx.drawMap(map);
+    //ctx.drawMap(map);
     //ctx.set(symbol: _player.symbol, color: Colors.yellowAccent, x: _player.x, y: _player.y);
     _world.process();
     //ctx.printText(text: 'Hello Rogualike', color: Colors.yellowAccent, x: 3, y: 15);

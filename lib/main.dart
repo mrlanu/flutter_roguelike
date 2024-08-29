@@ -14,16 +14,25 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final ctx = await RoguelikeToolkit.instance();
-  final world = Init.initializeWorld(ctx: ctx);
-  final dungeon = Dungeon.roomsAndCorridors();
+  final dungeon = Dungeon.roomsAndCorridors(Constants.columns, Constants.rows);
+  final world = Init.initializeWorld(dungeon: dungeon, ctx: ctx);
 
   final (playerX, playerY) = dungeon.rooms[0].center();
-  final player = world.createEntity(
-      [Position(playerX, playerY), Renderable('@', color: Colors.yellow)]);
+  final player = world.createEntity([
+    Player(),
+    Position(playerX, playerY),
+    Renderable(glyph: '@', color: Colors.yellow),
+    Viewshed([], 8)
+  ]);
 
   final rlState =
       RoguelikeGameState(world: world, playerId: player, map: dungeon.tiles);
 
+  /*final br = bresenham(0, 1, 6, 4);
+  for (var element in br) {
+    print('x: ${element.x}, y: ${element.y}');
+  }
+*/
   runApp(Roguelike(
     ctx: ctx,
     gameState: rlState,

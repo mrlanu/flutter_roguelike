@@ -5,15 +5,18 @@ import 'package:rltk/rltk.dart';
 import '../const/const.dart';
 import 'models.dart';
 
-class Dungeon {
+class Dungeon implements BaseMap{
   List<TileType> tiles = [];
   List<Rect> rooms = [];
+  @override
+  final int width;
+  final int height;
 
-  Dungeon._();
+  Dungeon._(this.width, this.height);
 
-  factory Dungeon.roomsAndCorridors() {
+  factory Dungeon.roomsAndCorridors(int width, int height) {
     // Create the map filled with wall tiles
-    final dungeon = Dungeon._();
+    final dungeon = Dungeon._(width, height);
     dungeon.tiles = List<TileType>.filled(
         Constants.columns * Constants.rows, TileType.wall);
 
@@ -102,4 +105,8 @@ class Dungeon {
       }
     }
   }
+
+  @override
+  bool isOpaque(int idx) => tiles[idx] == TileType.wall;
+
 }

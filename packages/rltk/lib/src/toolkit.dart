@@ -76,27 +76,6 @@ class RoguelikeToolkit {
     _buffer = newBuffer;
   }
 
-  void drawMap(List<TileType> map) {
-    var x = 0;
-    var y = 0;
-
-    for (final tile in map) {
-      switch (tile) {
-        case TileType.floor:
-          set(symbol: ' ', color: Colors.grey, x: x, y: y);
-        case TileType.wall:
-          set(symbol: '#', color: Colors.green, x: x, y: y);
-      }
-
-      // Move the coordinates
-      x += 1;
-      if (x > columns - 1) {
-        x = 0;
-        y += 1;
-      }
-    }
-  }
-
   int getIndexByXY({required int x, required int y}) => y * columns + x;
 
   static int getIndexByXy(
