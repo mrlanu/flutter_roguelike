@@ -71,8 +71,7 @@ List<Point<int>> scanFovLine({
       final target = Point(point.x, point.y);
       final dsq = distance2dSquared(start, target);
       if (dsq <= rangeSquared) {
-        if (map.isOpaque(RoguelikeToolkit.getIndexByXy(
-            x: target.x, y: target.y, columns: map.width,),)) {
+        if (map.isOpaque(target.x, target.y)) {
           blocked = true;
         }
         result.add(target);

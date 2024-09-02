@@ -117,6 +117,9 @@ class Dungeon implements BaseMap{
   int getIndexByXY({required int x, required int y}) => y * width + x;
 
   @override
-  bool isOpaque(int idx) => tiles[idx] == TileType.wall;
+  bool isOpaque(int x, int y) => tiles[getIndexByXY(x: x, y: y)] == TileType.wall;
+
+  @override
+  Point<int> dimension() => Point(width, height);
 
 }

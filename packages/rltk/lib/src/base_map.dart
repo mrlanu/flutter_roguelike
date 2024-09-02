@@ -1,4 +1,6 @@
+import 'dart:math';
+
 abstract class BaseMap {
-  bool isOpaque(int idx);
-  int get width;
+  bool isOpaque(int x, int y);
+  Point<int> dimension();
 }

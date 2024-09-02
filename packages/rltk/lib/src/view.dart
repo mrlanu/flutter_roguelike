@@ -4,15 +4,13 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:rltk/rltk.dart';
 import 'package:rltk/src/const/const.dart';
-import 'package:rltk/src/game_state.dart';
-import 'package:rltk/src/models/models.dart';
 
 class RoguelikeToolkitView extends StatefulWidget {
   const RoguelikeToolkitView(
-      {super.key, required this.gameState, required this.ctx});
+      {required this.gameState, required this.rltk, super.key,});
 
   final GameState gameState;
-  final RoguelikeToolkit ctx;
+  final RoguelikeToolkit rltk;
 
   @override
   State<RoguelikeToolkitView> createState() => _RoguelikeToolkitViewState();
@@ -34,10 +32,10 @@ class _RoguelikeToolkitViewState extends State<RoguelikeToolkitView> {
     return CustomPaint(
       size: size,
       painter: GridPainter(
-        rows: widget.ctx.rows,
-        columns: widget.ctx.columns,
-        image: widget.ctx.image,
-        tiles: widget.ctx.buffer,
+        rows: widget.rltk.rows,
+        columns: widget.rltk.columns,
+        image: widget.rltk.image,
+        tiles: widget.rltk.buffer,
       ),
     );
   }
@@ -49,7 +47,7 @@ class _RoguelikeToolkitViewState extends State<RoguelikeToolkitView> {
   }
 
   void _tick(Timer t) {
-    widget.gameState.tick(ctx: widget.ctx);
+    widget.gameState.tick(ctx: widget.rltk);
     if (mounted) {
       setState(() {});
     }

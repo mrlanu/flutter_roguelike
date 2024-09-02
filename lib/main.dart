@@ -13,9 +13,9 @@ import 'init.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final ctx = await RoguelikeToolkit.instance();
+  final rltk = await RoguelikeToolkit.instance();
   final dungeon = Dungeon.roomsAndCorridors(Constants.columns, Constants.rows);
-  final world = Init.initializeWorld(dungeon: dungeon, ctx: ctx);
+  final world = Init.initializeWorld(dungeon: dungeon, ctx: rltk);
 
   final (playerX, playerY) = dungeon.rooms[0].center();
   final player = world.createEntity([
@@ -29,15 +29,15 @@ Future<void> main() async {
       RoguelikeGameState(world: world, playerId: player, map: dungeon.tiles);
 
   runApp(Roguelike(
-    ctx: ctx,
+    rltk: rltk,
     gameState: rlState,
   ));
 }
 
 class Roguelike extends StatelessWidget {
-  const Roguelike({super.key, required this.ctx, required this.gameState});
+  const Roguelike({super.key, required this.rltk, required this.gameState});
 
-  final RoguelikeToolkit ctx;
+  final RoguelikeToolkit rltk;
   final GameState gameState;
 
   // This widget is the root of your application.
@@ -54,7 +54,7 @@ class Roguelike extends StatelessWidget {
             child: Scaffold(
                 body: Stack(children: [
           RoguelikeToolkitView(
-            ctx: ctx,
+            rltk: rltk,
             gameState: gameState,
           ),
           Positioned(
@@ -88,7 +88,7 @@ class Roguelike extends StatelessWidget {
     final Position position = Mapper<Position>(gameState.world)[player];
     final Viewshed viewshed = Mapper<Viewshed>(gameState.world)[player];
     final destinationIdx =
-        ctx.getIndexByXY(x: position.x + deltaX, y: position.y + deltaY);
+        rltk.getIndexByXY(x: position.x + deltaX, y: position.y + deltaY);
     if (gameState.map[destinationIdx] != TileType.wall) {
       position.x = min(Constants.columns - 1, max(0, position.x + deltaX));
       position.y = min(Constants.rows - 1, max(0, position.y + deltaY));
