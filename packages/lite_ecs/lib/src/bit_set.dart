@@ -21,17 +21,32 @@ class BitSet {
   }
 
   void reset() {
-    for (int i = 0; i < size; i++) {
+    for (var i = 0; i < size; i++) {
       _bits[i] = false;
     }
   }
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! BitSet) return false;
+    if (size != other.size) return false;
+
+    for (var i = 0; i < size; i++) {
+      if (_bits[i] != other._bits[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   BitSet operator &(BitSet other) {
     // Ensure the other bitset is the same size or the smaller size is used
-    int minSize = size < other.size ? size : other.size;
-    BitSet result = BitSet(minSize);
+    final minSize = size < other.size ? size : other.size;
+    final result = BitSet(minSize);
 
-    for (int i = 0; i < minSize; i++) {
+    for (var i = 0; i < minSize; i++) {
       result._bits[i] = _bits[i] && other._bits[i];
     }
 

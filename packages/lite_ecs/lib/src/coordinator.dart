@@ -1,11 +1,11 @@
 import 'package:lite_ecs/lite_ecs.dart';
 
-class World {
+class Coordinator {
   late final ComponentManager _componentManager;
   late final EntityManager _entityManager;
   late final SystemManager _systemManager;
 
-  World() {
+  Coordinator() {
     _componentManager = ComponentManager();
     _entityManager = EntityManager();
     _systemManager = SystemManager();
@@ -53,10 +53,10 @@ class World {
 
   // System methods
   System registerSystem<T extends System>(T system) {
-    return _systemManager.registerSystem(system);
+    return _systemManager.registerSystem<T>(system);
   }
 
   void setSystemSignature<T extends System>(Signature signature) {
-    _systemManager.setSignature(signature);
+    _systemManager.setSignature<T>(signature);
   }
 }

@@ -1,24 +1,22 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:rltk/rltk.dart';
 
-class Player extends Component{}
+class Player{}
 
-class Position extends Component {
+class Position{
   int x, y;
 
   Position(this.x, this.y);
 }
 
-class Renderable extends Component {
+class Renderable{
   String glyph;
   Color color;
 
   Renderable({required this.glyph, this.color = Colors.white});
 }
 
-class Viewshed extends Component {
+class Viewshed{
   List<Point<int>> visibleTiles;
   int range;
   bool dirty;
@@ -26,4 +24,4 @@ class Viewshed extends Component {
   Viewshed(this.visibleTiles, this.range, this.dirty);
 }
 
-class LeftMover extends Component{}
+class LeftMover{}

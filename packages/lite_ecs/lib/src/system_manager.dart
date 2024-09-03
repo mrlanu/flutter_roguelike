@@ -17,9 +17,9 @@ class SystemManager {
   void setSignature<T extends System>(Signature signature) {
     final type = T;
 
-    if (!_systems.containsKey(type)) {
+    /*if (!_systems.containsKey(type)) {
       throw ArgumentError('System used before registered.');
-    }
+    }*/
 
     _signatures[type] = signature;
   }
@@ -31,11 +31,12 @@ class SystemManager {
   }
 
   void entitySignatureChanged(Entity entity, Signature entitySignature) {
-    for (var type in _systems.keys) {
+    for (final type in _systems.keys) {
       final system = _systems[type]!;
       final systemSignature = _signatures[type]!;
 
-      if ((entitySignature & systemSignature) == systemSignature) {
+      final b = entitySignature & systemSignature;
+      if (b == systemSignature) {
         system.entities.add(entity);
       } else {
         system.entities.remove(entity);

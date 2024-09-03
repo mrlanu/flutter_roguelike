@@ -3,124 +3,107 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_roguelike/const/const.dart';
 import 'package:flutter_roguelike/models/dungeon.dart';
+import 'package:lite_ecs/lite_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'components.dart';
 
-class DrawMapSystem extends EntityProcessingSystem {
-  late Mapper<Player> playerMapper;
-  late Mapper<Viewshed> viewshedMapper;
+class DrawMapSystem extends System {
+
   final RoguelikeToolkit ctx;
   final Dungeon dungeon;
 
-  DrawMapSystem({required this.dungeon, required this.ctx})
-      : super(Aspect.forAllOf([Player, Viewshed]));
+  DrawMapSystem({required this.dungeon, required this.ctx});
 
-  @override
-  void initialize() {
-    playerMapper = Mapper<Player>(world);
-    viewshedMapper = Mapper<Viewshed>(world);
-  }
+  void update() {
+    for (Entity e in entities) {
+      var x = 0;
+      var y = 0;
 
-  @override
-  void processEntity(int entity) {
-    Viewshed viewshed = viewshedMapper[entity];
-    var x = 0;
-    var y = 0;
-
-    for (var i = 0; i < dungeon.tiles.length; i++) {
-      if (dungeon.revealedTiles[i]) {
-        var fg = Colors.yellow;
-        var symbol = '';
-        switch (dungeon.tiles[i]) {
-          case TileType.floor:
-            symbol = '.';
+      for (var i = 0; i < dungeon.tiles.length; i++) {
+        if (dungeon.revealedTiles[i]) {
+          var fg = Colors.yellow;
+          var symbol = '';
+          switch (dungeon.tiles[i]) {
+            case TileType.floor:
+              symbol = '.';
+              fg = Colors.grey;
+            case TileType.wall:
+              symbol = '#';
+          }
+          if (!dungeon.visibleTiles[i]) {
             fg = Colors.grey;
-          case TileType.wall:
-            symbol = '#';
+          }
+          ctx.set(symbol: symbol, color: fg, x: x, y: y);
         }
-        if (!dungeon.visibleTiles[i]) { fg = Colors.grey; }
-        ctx.set(symbol: symbol, color: fg, x: x, y: y);
-      }
 
-      // Move the coordinates
-      x += 1;
-      if (x > Constants.columns - 1) {
-        x = 0;
-        y += 1;
+        // Move the coordinates
+        x += 1;
+        if (x > Constants.columns - 1) {
+          x = 0;
+          y += 1;
+        }
       }
     }
   }
 }
 
-class RenderSystem extends EntityProcessingSystem {
-  late Mapper<Position> positionMapper;
-  late Mapper<Renderable> renderableMapper;
+class RenderSystem extends System {
+
+  final Coordinator coordinator;
   final RoguelikeToolkit ctx;
 
-  RenderSystem(this.ctx) : super(Aspect.forAllOf([Position, Renderable]));
+  RenderSystem({required this.coordinator, required this.ctx});
 
-  @override
-  void initialize() {
-    positionMapper = Mapper<Position>(world);
-    renderableMapper = Mapper<Renderable>(world);
-  }
-
-  @override
-  void processEntity(int entity) {
-    Position position = positionMapper[entity];
-    Renderable renderable = renderableMapper[entity];
-    ctx.set(
-        symbol: renderable.glyph,
-        color: renderable.color,
-        x: position.x,
-        y: position.y);
-  }
-}
-
-class VisibilitySystem extends EntityProcessingSystem {
-  final Dungeon map;
-  late Mapper<Position> positionMapper;
-  late Mapper<Viewshed> viewshedMapper;
-
-  VisibilitySystem({required this.map})
-      : super(Aspect.forAllOf([Position, Viewshed]));
-
-  @override
-  void initialize() {
-    positionMapper = Mapper<Position>(world);
-    viewshedMapper = Mapper<Viewshed>(world);
-  }
-
-  @override
-  void processEntity(int entity) {
-    Position position = positionMapper[entity];
-    Viewshed viewshed = viewshedMapper[entity];
-    if (viewshed.dirty) {
-      viewshed.dirty = false;
-      viewshed.visibleTiles.clear();
-      viewshed.visibleTiles = fieldOfView(
-          start: Point(position.x, position.y),
-          range: viewshed.range,
-          map: map);
-      viewshed.visibleTiles.removeWhere((p) =>
-          p.x < 0 ||
-          p.x >= Constants.columns ||
-          p.y < 0 ||
-          p.y >= Constants.rows);
-      for(var i = 0; i < map.visibleTiles.length; i++){
-        map.visibleTiles[i] = false;
-      }
-      for (final pt in viewshed.visibleTiles) {
-        final idx = map.getIndexByXY(x: pt.x, y: pt.y);
-        map.revealedTiles[idx] = true;
-        map.visibleTiles[idx] = true;
-      }
+  void update() {
+    for(Entity e in entities){
+      final position = coordinator.getComponent<Position>(e);
+      final renderable = coordinator.getComponent<Renderable>(e);
+      ctx.set(
+          symbol: renderable!.glyph,
+          color: renderable.color,
+          x: position!.x,
+          y: position.y);
     }
   }
 }
 
-class LeftWalkerSystem extends EntityProcessingSystem {
+class VisibilitySystem extends System {
+  final Dungeon map;
+  final Coordinator coordinator;
+
+  VisibilitySystem({required this.coordinator, required this.map});
+
+  void update() {
+    for(Entity e in entities){
+      final position = coordinator.getComponent<Position>(e);
+      final viewshed = coordinator.getComponent<Viewshed>(e);
+      if (viewshed!.dirty) {
+        viewshed.dirty = false;
+        viewshed.visibleTiles.clear();
+        viewshed.visibleTiles = fieldOfView(
+            start: Point(position!.x, position.y),
+            range: viewshed.range,
+            map: map);
+        viewshed.visibleTiles.removeWhere((p) =>
+        p.x < 0 ||
+            p.x >= Constants.columns ||
+            p.y < 0 ||
+            p.y >= Constants.rows);
+        for (var i = 0; i < map.visibleTiles.length; i++) {
+          map.visibleTiles[i] = false;
+        }
+        for (final pt in viewshed.visibleTiles) {
+          final idx = map.getIndexByXY(x: pt.x, y: pt.y);
+          map.revealedTiles[idx] = true;
+          map.visibleTiles[idx] = true;
+        }
+      }
+    }
+    }
+}
+
+/*class LeftWalkerSystem extends EntityProcessingSystem {
   late Mapper<Position> positionMapper;
   late Mapper<LeftMover> leftMoverMapper;
 
@@ -140,4 +123,4 @@ class LeftWalkerSystem extends EntityProcessingSystem {
       position.x = Constants.columns - 1;
     }
   }
-}
+}*/

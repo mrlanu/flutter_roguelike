@@ -14,6 +14,8 @@ dependencies:
   equatable: ^2.0.5
   rltk:
     path: packages/rltk
+  lite_ecs:
+    path: packages/lite_ecs
 
 dev_dependencies:
   flutter_test:

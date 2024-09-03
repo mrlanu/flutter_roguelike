@@ -123,6 +123,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  lite_ecs:
+    dependency: "direct main"
+    description:
+      path: "packages/lite_ecs"
+      relative: true
+    source: path
+    version: "0.1.0+1"
   matcher:
     dependency: transitive
     description:
@@ -233,4 +240,4 @@ packages:
     version: "14.2.1"
 sdks:
   dart: ">=3.4.3 <4.0.0"
-  flutter: ">=3.19.0"
+  flutter: ">=3.22.0"

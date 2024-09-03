@@ -8,4 +8,4 @@ export 'src/ecs_defs.dart';
 export 'src/entity_manager.dart';
 export 'src/system.dart';
 export 'src/system_manager.dart';
-export 'src/world.dart';
+export 'src/coordinator.dart';
