@@ -47,7 +47,7 @@ class Roguelike extends StatelessWidget {
   const Roguelike({super.key, required this.rltk, required this.gameState});
 
   final RoguelikeToolkit rltk;
-  final GameState gameState;
+  final RoguelikeGameState gameState;
 
   // This widget is the root of your application.
   @override
@@ -93,14 +93,12 @@ class Roguelike extends StatelessWidget {
   }
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
-    final state = gameState as RoguelikeGameState;
-    final world = state.world;
-    final position = world.gatherComponents<Position>();
-    final viewshed = world.gatherComponents<Viewshed>();
+    final position = gameState.world.gatherComponents<Position>();
+    final viewshed = gameState.world.gatherComponents<Viewshed>();
     for (var (pos, view) in (position, viewshed).join()) {
       final destinationIdx =
           rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
-      if (state.map[destinationIdx] != TileType.wall) {
+      if (gameState.map[destinationIdx] != TileType.wall) {
         pos.x = min(Constants.columns - 1, max(0, pos.x + deltaX));
         pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));
         view.dirty = true;

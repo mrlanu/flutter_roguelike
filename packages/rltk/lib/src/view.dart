@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:rltk/rltk.dart';
 import 'package:rltk/src/const/const.dart';
 
-class RoguelikeToolkitView extends StatefulWidget {
+class RoguelikeToolkitView<T extends GameState> extends StatefulWidget {
   const RoguelikeToolkitView(
       {required this.gameState, required this.rltk, super.key,});
 
-  final GameState gameState;
+  final T gameState;
   final RoguelikeToolkit rltk;
 
   @override

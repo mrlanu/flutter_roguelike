@@ -2,7 +2,7 @@ import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 
-class RoguelikeGameState extends GameState {
+class RoguelikeGameState implements GameState {
   final World _world;
   final List<TileType> _map;
 
