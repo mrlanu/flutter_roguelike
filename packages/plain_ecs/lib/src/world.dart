@@ -6,11 +6,15 @@ class World {
   late final EntityManager _entityManager;
   late final List<System> _systems;
   final Map<ComponentFamilyIndex, Map<Entity, Component>> _componentMaps = {};
+  late final Storage _storage;
 
   World() {
     _entityManager = EntityManager();
     _systems = [];
+    _storage = Storage();
   }
+
+  Storage get storage => _storage;
 
   List<ComponentType> gatherComponents<ComponentType>() {
     final componentFamilyId = ComponentFamily.getBitIndex(ComponentType);
@@ -51,6 +55,12 @@ class World {
   void run() {
     for (var s in _systems) {
       s.run();
+    }
+  }
+
+  void init(){
+    for (var s in _systems) {
+      s.init();
     }
   }
 }

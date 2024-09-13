@@ -9,5 +9,6 @@ export 'src/const.dart';
 export 'src/entity_handle.dart';
 export 'src/entity_manager.dart';
 export 'src/join.dart';
+export 'src/storage.dart';
 export 'src/system.dart';
 export 'src/world.dart';

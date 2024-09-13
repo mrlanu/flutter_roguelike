@@ -6,5 +6,6 @@ abstract class System{
   World get parentWorld => _parentWorld;
   void setWorld(World world) => _parentWorld = world;
 
+  void init(){}
   void run();
 }

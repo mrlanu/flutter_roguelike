@@ -70,9 +70,13 @@ class RenderSystem extends System {
 }
 
 class VisibilitySystem extends System {
-  final Dungeon map;
 
-  VisibilitySystem({required this.map});
+  late final Dungeon _dungeon;
+
+  @override
+  void init(){
+    _dungeon = parentWorld.storage.get<Dungeon>();
+  }
 
   @override
   void run() {
@@ -86,19 +90,19 @@ class VisibilitySystem extends System {
         view.visibleTiles = fieldOfView(
             start: Point(pos.x, pos.y),
             range: view.range,
-            map: map);
+            map: _dungeon);
         view.visibleTiles.removeWhere((p) =>
         p.x < 0 ||
             p.x >= Constants.columns ||
             p.y < 0 ||
             p.y >= Constants.rows);
-        for (var i = 0; i < map.visibleTiles.length; i++) {
-          map.visibleTiles[i] = false;
+        for (var i = 0; i < _dungeon.visibleTiles.length; i++) {
+          _dungeon.visibleTiles[i] = false;
         }
         for (final pt in view.visibleTiles) {
-          final idx = map.getIndexByXY(x: pt.x, y: pt.y);
-          map.revealedTiles[idx] = true;
-          map.visibleTiles[idx] = true;
+          final idx = _dungeon.getIndexByXY(x: pt.x, y: pt.y);
+          _dungeon.revealedTiles[idx] = true;
+          _dungeon.visibleTiles[idx] = true;
         }
       }
     }

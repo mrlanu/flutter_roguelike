@@ -9,18 +9,27 @@ import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
-import 'init.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final rltk = await RoguelikeToolkit.instance();
+
+  final rlState = RoguelikeGameState(
+    world: _initWorld(rltk),
+  );
+
+  runApp(Roguelike(
+    rltk: rltk,
+    gameState: rlState,
+  ));
+}
+
+World _initWorld(RoguelikeToolkit rltk) {
   final dungeon = Dungeon.roomsAndCorridors(Constants.columns, Constants.rows);
-  final world = Init.initializeWorld(dungeon: dungeon, ctx: rltk);
-
   final (playerX, playerY) = dungeon.rooms[0].center();
-
-  world
+  final world = World()
+    ..storage.put(dungeon)
     ..createEntity([dungeon])
     ..createEntity([
       Player(),
@@ -28,19 +37,11 @@ Future<void> main() async {
       Renderable(glyph: '@', color: Colors.red),
       Viewshed([], 8, true)
     ])
-    ..registerSystem(VisibilitySystem(map: dungeon))
+    ..registerSystem(VisibilitySystem())
     ..registerSystem(DrawMapSystem(ctx: rltk))
-    ..registerSystem(RenderSystem(ctx: rltk));
-
-  final rlState = RoguelikeGameState(
-    world: world,
-    map: dungeon.tiles,
-  );
-
-  runApp(Roguelike(
-    rltk: rltk,
-    gameState: rlState,
-  ));
+    ..registerSystem(RenderSystem(ctx: rltk))
+    ..init();
+  return world;
 }
 
 class Roguelike extends StatelessWidget {
@@ -93,12 +94,13 @@ class Roguelike extends StatelessWidget {
   }
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
+    final dungeon = gameState.world.storage.get<Dungeon>();
     final position = gameState.world.gatherComponents<Position>();
     final viewshed = gameState.world.gatherComponents<Viewshed>();
     for (var (pos, view) in (position, viewshed).join()) {
       final destinationIdx =
           rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
-      if (gameState.map[destinationIdx] != TileType.wall) {
+      if (dungeon.tiles[destinationIdx] != TileType.wall) {
         pos.x = min(Constants.columns - 1, max(0, pos.x + deltaX));
         pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));
         view.dirty = true;
