@@ -1,27 +1,18 @@
+import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
-
-import 'ecs/systems.dart';
 
 
 class RoguelikeGameState extends GameState {
   final World _world;
-  final int _playerId;
   final List<TileType> _map;
-  final void Function() t;
 
   RoguelikeGameState({
     required World world,
-    required int playerId,
     required List<TileType> map,
-    required this.t,
-  }): _world = world, _playerId = playerId, _map = map;
+  }): _world = world, _map = map;
 
   @override
   World get world => _world;
-
-
-  @override
-  int get player => _playerId;
 
 
   @override
@@ -30,7 +21,7 @@ class RoguelikeGameState extends GameState {
   @override
   void tick({required RoguelikeToolkit ctx}) {
     ctx.clx();
-    t();
+    world.run();
     //ctx.drawMap(map);
     //ctx.set(symbol: _player.symbol, color: Colors.yellowAccent, x: _player.x, y: _player.y);
     //_world.process();

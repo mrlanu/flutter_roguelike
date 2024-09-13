@@ -1,4 +1,5 @@
 import 'package:flutter_roguelike/models/dungeon.dart';
+import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'ecs/ecs.dart';
@@ -12,8 +13,12 @@ class Init {
         ..addSystem(RenderSystem(ctx))
         ..initialize();*/
 
-  static World initializeWorld(
+  /*static World initializeWorld(
       {required Dungeon dungeon, required RoguelikeToolkit ctx}) =>
       World()
-        ..initialize();
+        ..initialize();*/
+
+  static World initializeWorld(
+          {required Dungeon dungeon, required RoguelikeToolkit ctx}) =>
+      World();
 }

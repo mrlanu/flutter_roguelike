@@ -1,22 +1,23 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:plain_ecs/plain_ecs.dart';
 
-class Player{}
+class Player extends Component{}
 
-class Position{
+class Position extends Component{
   int x, y;
 
   Position(this.x, this.y);
 }
 
-class Renderable{
+class Renderable extends Component{
   String glyph;
   Color color;
 
   Renderable({required this.glyph, this.color = Colors.white});
 }
 
-class Viewshed{
+class Viewshed extends Component{
   List<Point<int>> visibleTiles;
   int range;
   bool dirty;
@@ -24,4 +25,4 @@ class Viewshed{
   Viewshed(this.visibleTiles, this.range, this.dirty);
 }
 
-class LeftMover{}
+class LeftMover extends Component{}

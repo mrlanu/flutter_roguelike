@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_roguelike/ecs/ecs.dart';
 import 'package:flutter_roguelike/models/dungeon.dart';
 import 'package:flutter_roguelike/rl_state.dart';
 import 'package:flutter_roguelike/widgets/cross_buttons.dart';
-import 'package:lite_ecs/lite_ecs.dart';
+import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
@@ -18,50 +20,22 @@ Future<void> main() async {
 
   final (playerX, playerY) = dungeon.rooms[0].center();
 
-  final coordinator = Coordinator();
+  world
+    ..createEntity([dungeon])
+    ..createEntity([
+      Player(),
+      Position(playerX, playerY),
+      Renderable(glyph: '@', color: Colors.red),
+      Viewshed([], 8, true)
+    ])
+    ..registerSystem(VisibilitySystem(map: dungeon))
+    ..registerSystem(DrawMapSystem(ctx: rltk))
+    ..registerSystem(RenderSystem(ctx: rltk));
 
-  final drawMapSystem = DrawMapSystem(dungeon: dungeon, ctx: rltk);
-  final visibilitySystem = VisibilitySystem(coordinator: coordinator, map: dungeon);
-  final renderSystem = RenderSystem(coordinator: coordinator, ctx: rltk);
-  coordinator
-    ..registerComponent<Player>()
-    ..registerComponent<Position>()
-    ..registerComponent<Viewshed>()
-    ..registerComponent<Renderable>()
-    ..registerSystem(visibilitySystem)
-    ..registerSystem(drawMapSystem)
-    ..registerSystem(renderSystem);
-
-  final signatureDrawMapSystem = Signature(32)
-    ..set(coordinator.getComponentType<Player>())
-    ..set(coordinator.getComponentType<Viewshed>());
-
-  final signatureVisibilitySystem = Signature(32)
-    ..set(coordinator.getComponentType<Position>())
-    ..set(coordinator.getComponentType<Viewshed>());
-
-  final signatureRenderSystem = Signature(32)
-    ..set(coordinator.getComponentType<Position>())
-    ..set(coordinator.getComponentType<Renderable>());
-
-  coordinator.setSystemSignature<DrawMapSystem>(signatureDrawMapSystem);
-  coordinator.setSystemSignature<RenderSystem>(signatureRenderSystem);
-  coordinator.setSystemSignature<VisibilitySystem>(signatureVisibilitySystem);
-
-  final player = coordinator.createEntity();
-
-  coordinator
-    ..addComponent(player, Player())
-    ..addComponent(player, Position(playerX, playerY))
-    ..addComponent(player, Renderable(glyph: '@', color: Colors.red))
-    ..addComponent(player, Viewshed([], 8, true));
-
-  final rlState =
-      RoguelikeGameState(world: world, playerId: player, map: dungeon.tiles, t: () {
-        visibilitySystem.update();
-        drawMapSystem.update();
-        renderSystem.update();
-      },);
+  final rlState = RoguelikeGameState(
+    world: world,
+    map: dungeon.tiles,
+  );
 
   runApp(Roguelike(
     rltk: rltk,
@@ -119,15 +93,18 @@ class Roguelike extends StatelessWidget {
   }
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
-    /*final player = gameState.player;
-    final Position position = Mapper<Position>(gameState.world)[player];
-    final Viewshed viewshed = Mapper<Viewshed>(gameState.world)[player];
-    final destinationIdx =
-        rltk.getIndexByXY(x: position.x + deltaX, y: position.y + deltaY);
-    if (gameState.map[destinationIdx] != TileType.wall) {
-      position.x = min(Constants.columns - 1, max(0, position.x + deltaX));
-      position.y = min(Constants.rows - 1, max(0, position.y + deltaY));
-      viewshed.dirty = true;
-    }*/
+    final state = gameState as RoguelikeGameState;
+    final world = state.world;
+    final position = world.gatherComponents<Position>();
+    final viewshed = world.gatherComponents<Viewshed>();
+    for (var (pos, view) in (position, viewshed).join()) {
+      final destinationIdx =
+          rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
+      if (state.map[destinationIdx] != TileType.wall) {
+        pos.x = min(Constants.columns - 1, max(0, pos.x + deltaX));
+        pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));
+        view.dirty = true;
+      }
+    }
   }
 }

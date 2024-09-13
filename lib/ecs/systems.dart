@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_roguelike/const/const.dart';
 import 'package:flutter_roguelike/models/dungeon.dart';
-import 'package:lite_ecs/lite_ecs.dart';
+import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'components.dart';
@@ -11,12 +11,13 @@ import 'components.dart';
 class DrawMapSystem extends System {
 
   final RoguelikeToolkit ctx;
-  final Dungeon dungeon;
 
-  DrawMapSystem({required this.dungeon, required this.ctx});
+  DrawMapSystem({required this.ctx});
 
-  void update() {
-    for (Entity e in entities) {
+  @override
+  void run() {
+    final dungeons = parentWorld.gatherComponents<Dungeon>();
+    for (var(dungeon,) in (dungeons,).join()) {
       var x = 0;
       var y = 0;
 
@@ -50,42 +51,43 @@ class DrawMapSystem extends System {
 
 class RenderSystem extends System {
 
-  final Coordinator coordinator;
   final RoguelikeToolkit ctx;
 
-  RenderSystem({required this.coordinator, required this.ctx});
+  RenderSystem({required this.ctx});
 
-  void update() {
-    for(Entity e in entities){
-      final position = coordinator.getComponent<Position>(e);
-      final renderable = coordinator.getComponent<Renderable>(e);
+  @override
+  void run() {
+    final position = parentWorld.gatherComponents<Position>();
+    final renderable = parentWorld.gatherComponents<Renderable>();
+    for(var(pos, ren) in (position, renderable).join()){
       ctx.set(
-          symbol: renderable!.glyph,
-          color: renderable.color,
-          x: position!.x,
-          y: position.y);
+          symbol: ren.glyph,
+          color: ren.color,
+          x: pos.x,
+          y: pos.y);
     }
   }
 }
 
 class VisibilitySystem extends System {
   final Dungeon map;
-  final Coordinator coordinator;
 
-  VisibilitySystem({required this.coordinator, required this.map});
+  VisibilitySystem({required this.map});
 
-  void update() {
-    for(Entity e in entities){
-      final position = coordinator.getComponent<Position>(e);
-      final viewshed = coordinator.getComponent<Viewshed>(e);
-      if (viewshed!.dirty) {
-        viewshed.dirty = false;
-        viewshed.visibleTiles.clear();
-        viewshed.visibleTiles = fieldOfView(
-            start: Point(position!.x, position.y),
-            range: viewshed.range,
+  @override
+  void run() {
+    final position = parentWorld.gatherComponents<Position>();
+    final viewshed = parentWorld.gatherComponents<Viewshed>();
+    for(var(pos, view) in (position, viewshed).join()){
+
+      if (view.dirty) {
+        view.dirty = false;
+        view.visibleTiles.clear();
+        view.visibleTiles = fieldOfView(
+            start: Point(pos.x, pos.y),
+            range: view.range,
             map: map);
-        viewshed.visibleTiles.removeWhere((p) =>
+        view.visibleTiles.removeWhere((p) =>
         p.x < 0 ||
             p.x >= Constants.columns ||
             p.y < 0 ||
@@ -93,7 +95,7 @@ class VisibilitySystem extends System {
         for (var i = 0; i < map.visibleTiles.length; i++) {
           map.visibleTiles[i] = false;
         }
-        for (final pt in viewshed.visibleTiles) {
+        for (final pt in view.visibleTiles) {
           final idx = map.getIndexByXY(x: pt.x, y: pt.y);
           map.revealedTiles[idx] = true;
           map.visibleTiles[idx] = true;
