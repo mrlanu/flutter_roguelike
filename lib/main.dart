@@ -1,32 +1,23 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_roguelike/ecs/ecs.dart';
 import 'package:flutter_roguelike/models/dungeon.dart';
 import 'package:flutter_roguelike/rl_state.dart';
 import 'package:flutter_roguelike/widgets/cross_buttons.dart';
+import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
-import 'ecs/components.dart';
-import 'init.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final rltk = await RoguelikeToolkit.instance();
-  final dungeon = Dungeon.roomsAndCorridors(Constants.columns, Constants.rows);
-  final world = Init.initializeWorld(dungeon: dungeon, ctx: rltk);
 
-  final (playerX, playerY) = dungeon.rooms[0].center();
-  final player = world.createEntity([
-    Player(),
-    Position(playerX, playerY),
-    Renderable(glyph: '@', color: Colors.red),
-    Viewshed([], 8, true)
-  ]);
-
-  final rlState =
-      RoguelikeGameState(world: world, playerId: player, map: dungeon.tiles);
+  final rlState = RoguelikeGameState(
+    world: _initWorld(rltk),
+  );
 
   runApp(Roguelike(
     rltk: rltk,
@@ -34,11 +25,30 @@ Future<void> main() async {
   ));
 }
 
+World _initWorld(RoguelikeToolkit rltk) {
+  final dungeon = Dungeon.roomsAndCorridors(Constants.columns, Constants.rows);
+  final (playerX, playerY) = dungeon.rooms[0].center();
+  final world = World()
+    ..storage.put(dungeon)
+    ..createEntity([dungeon])
+    ..createEntity([
+      Player(),
+      Position(playerX, playerY),
+      Renderable(glyph: '@', color: Colors.red),
+      Viewshed([], 8, true)
+    ])
+    ..registerSystem(VisibilitySystem())
+    ..registerSystem(DrawMapSystem(ctx: rltk))
+    ..registerSystem(RenderSystem(ctx: rltk))
+    ..init();
+  return world;
+}
+
 class Roguelike extends StatelessWidget {
   const Roguelike({super.key, required this.rltk, required this.gameState});
 
   final RoguelikeToolkit rltk;
-  final GameState gameState;
+  final RoguelikeGameState gameState;
 
   // This widget is the root of your application.
   @override
@@ -84,15 +94,17 @@ class Roguelike extends StatelessWidget {
   }
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
-    final player = gameState.player;
-    final Position position = Mapper<Position>(gameState.world)[player];
-    final Viewshed viewshed = Mapper<Viewshed>(gameState.world)[player];
-    final destinationIdx =
-        rltk.getIndexByXY(x: position.x + deltaX, y: position.y + deltaY);
-    if (gameState.map[destinationIdx] != TileType.wall) {
-      position.x = min(Constants.columns - 1, max(0, position.x + deltaX));
-      position.y = min(Constants.rows - 1, max(0, position.y + deltaY));
-      viewshed.dirty = true;
+    final dungeon = gameState.world.storage.get<Dungeon>();
+    final position = gameState.world.gatherComponents<Position>();
+    final viewshed = gameState.world.gatherComponents<Viewshed>();
+    for (var (pos, view) in (position, viewshed).join()) {
+      final destinationIdx =
+          rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
+      if (dungeon.tiles[destinationIdx] != TileType.wall) {
+        pos.x = min(Constants.columns - 1, max(0, pos.x + deltaX));
+        pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));
+        view.dirty = true;
+      }
     }
   }
 }

@@ -1,11 +1,13 @@
 import 'dart:math';
 
+
+import 'package:plain_ecs/plain_ecs.dart' as plain;
 import 'package:rltk/rltk.dart';
 
 import '../const/const.dart';
 import 'models.dart';
 
-class Dungeon implements BaseMap{
+class Dungeon extends plain.Component implements BaseMap{
   List<TileType> tiles = [];
   List<Rect> rooms = [];
   @override
