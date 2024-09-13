@@ -9,7 +9,6 @@ import 'package:rltk/rltk.dart';
 import 'components.dart';
 
 class DrawMapSystem extends System {
-
   final RoguelikeToolkit ctx;
 
   DrawMapSystem({required this.ctx});
@@ -17,7 +16,7 @@ class DrawMapSystem extends System {
   @override
   void run() {
     final dungeons = parentWorld.gatherComponents<Dungeon>();
-    for (var(dungeon,) in (dungeons,).join()) {
+    for (var (dungeon,) in (dungeons,).join()) {
       var x = 0;
       var y = 0;
 
@@ -50,7 +49,6 @@ class DrawMapSystem extends System {
 }
 
 class RenderSystem extends System {
-
   final RoguelikeToolkit ctx;
 
   RenderSystem({required this.ctx});
@@ -59,22 +57,17 @@ class RenderSystem extends System {
   void run() {
     final position = parentWorld.gatherComponents<Position>();
     final renderable = parentWorld.gatherComponents<Renderable>();
-    for(var(pos, ren) in (position, renderable).join()){
-      ctx.set(
-          symbol: ren.glyph,
-          color: ren.color,
-          x: pos.x,
-          y: pos.y);
+    for (var (pos, ren) in (position, renderable).join()) {
+      ctx.set(symbol: ren.glyph, color: ren.color, x: pos.x, y: pos.y);
     }
   }
 }
 
 class VisibilitySystem extends System {
-
   late final Dungeon _dungeon;
 
   @override
-  void init(){
+  void init() {
     _dungeon = parentWorld.storage.get<Dungeon>();
   }
 
@@ -82,17 +75,18 @@ class VisibilitySystem extends System {
   void run() {
     final position = parentWorld.gatherComponents<Position>();
     final viewshed = parentWorld.gatherComponents<Viewshed>();
-    for(var(pos, view) in (position, viewshed).join()){
-
+    for (var (pos, view) in (position, viewshed).join()) {
       if (view.dirty) {
         view.dirty = false;
         view.visibleTiles.clear();
-        view.visibleTiles = fieldOfView(
+        /*view.visibleTiles = fieldOfView(
             start: Point(pos.x, pos.y),
             range: view.range,
-            map: _dungeon);
+            map: _dungeon);*/
+        view.visibleTiles =
+            getVisiblePoints(_dungeon, Point(pos.x, pos.y), view.range);
         view.visibleTiles.removeWhere((p) =>
-        p.x < 0 ||
+            p.x < 0 ||
             p.x >= Constants.columns ||
             p.y < 0 ||
             p.y >= Constants.rows);
@@ -106,7 +100,7 @@ class VisibilitySystem extends System {
         }
       }
     }
-    }
+  }
 }
 
 /*class LeftWalkerSystem extends EntityProcessingSystem {

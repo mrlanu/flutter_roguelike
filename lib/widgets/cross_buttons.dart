@@ -37,13 +37,13 @@ class _CrossButtonsState extends State<CrossButtons> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,
-      height: 200, // Size of the entire widget
+      width: 140,
+      height: 140, // Size of the entire widget
       child: Stack(
         children: [
           Positioned(
             top: 0,
-            left: 75,
+            left: 55,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.up),
               onLongPressStart: (_) => _startMoving(Direction.up),
@@ -52,8 +52,8 @@ class _CrossButtonsState extends State<CrossButtons> {
             ),
           ),
           Positioned(
-            bottom: 20,
-            left: 75,
+            bottom: 0,
+            left: 55,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.down),
               onLongPressStart: (_) => _startMoving(Direction.down),
@@ -63,7 +63,7 @@ class _CrossButtonsState extends State<CrossButtons> {
           ),
           Positioned(
             left: 0,
-            top: 75,
+            top: 55,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.left),
               onLongPressStart: (_) => _startMoving(Direction.left),
@@ -72,8 +72,8 @@ class _CrossButtonsState extends State<CrossButtons> {
             ),
           ),
           Positioned(
-            right: 20,
-            top: 75,
+            right: 0,
+            top: 55,
             child: GestureDetector(
               onTap: () => widget.onTop!(Direction.right),
               onLongPressStart: (_) => _startMoving(Direction.right),

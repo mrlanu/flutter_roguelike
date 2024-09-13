@@ -1,16 +1,14 @@
 import 'dart:math';
 
-
-import 'package:plain_ecs/plain_ecs.dart' as plain;
+import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import '../const/const.dart';
 import 'models.dart';
 
-class Dungeon extends plain.Component implements BaseMap{
+class Dungeon extends Component implements BaseMap {
   List<TileType> tiles = [];
   List<Rect> rooms = [];
-  @override
   final int width;
   final int height;
 
@@ -25,10 +23,10 @@ class Dungeon extends plain.Component implements BaseMap{
     dungeon.tiles = List<TileType>.filled(
         Constants.columns * Constants.rows, TileType.wall);
 
-    dungeon.revealedTiles = List<bool>.filled(
-        Constants.columns * Constants.rows, false);
-    dungeon.visibleTiles = List<bool>.filled(
-        Constants.columns * Constants.rows, false);
+    dungeon.revealedTiles =
+        List<bool>.filled(Constants.columns * Constants.rows, false);
+    dungeon.visibleTiles =
+        List<bool>.filled(Constants.columns * Constants.rows, false);
 
     dungeon.rooms = <Rect>[];
     const int maxRooms = 30;
@@ -49,7 +47,8 @@ class Dungeon extends plain.Component implements BaseMap{
       // Check for room intersections
       var ok = true;
       for (Rect otherRoom in dungeon.rooms) {
-        if (newRoom.intersects(otherRoom)) {
+        if (newRoom.intersects(otherRoom) ||
+            newRoom.intersects(Rect(23, 64, 17, 20))) {
           ok = false;
           break;
         }
@@ -99,7 +98,7 @@ class Dungeon extends plain.Component implements BaseMap{
   void _applyHorizontalTunnel(int x1, int x2, int y) {
     for (var x = x1 < x2 ? x1 : x2; x <= (x1 > x2 ? x1 : x2); x++) {
       final idx =
-      RoguelikeToolkit.getIndexByXy(x: x, y: y, columns: Constants.columns);
+          RoguelikeToolkit.getIndexByXy(x: x, y: y, columns: Constants.columns);
       if (idx >= 0 && idx < tiles.length) {
         tiles[idx] = TileType.floor;
       }
@@ -109,7 +108,7 @@ class Dungeon extends plain.Component implements BaseMap{
   void _applyVerticalTunnel(int y1, int y2, int x) {
     for (var y = y1 < y2 ? y1 : y2; y <= (y1 > y2 ? y1 : y2); y++) {
       final idx =
-      RoguelikeToolkit.getIndexByXy(x: x, y: y, columns: Constants.columns);
+          RoguelikeToolkit.getIndexByXy(x: x, y: y, columns: Constants.columns);
       if (idx >= 0 && idx < tiles.length) {
         tiles[idx] = TileType.floor;
       }
@@ -119,9 +118,9 @@ class Dungeon extends plain.Component implements BaseMap{
   int getIndexByXY({required int x, required int y}) => y * width + x;
 
   @override
-  bool isOpaque(int x, int y) => tiles[getIndexByXY(x: x, y: y)] == TileType.wall;
+  bool isOpaque(int x, int y) =>
+      tiles[getIndexByXY(x: x, y: y)] == TileType.wall;
 
   @override
   Point<int> dimension() => Point(width, height);
-
 }
