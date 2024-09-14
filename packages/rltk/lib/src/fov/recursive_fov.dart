@@ -4,6 +4,7 @@ import 'package:rltk/rltk.dart';
 List<Point<int>> getVisiblePoints(BaseMap map, Point<int> center, int range) {
   final visiblePoints = <Point<int>>[];
 
+  visiblePoints.add(center);
   void castLight(int row, double startSlope, double endSlope, int xx, int xy,
       int yx, int yy,) {
     if (startSlope < endSlope) return;

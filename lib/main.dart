@@ -30,17 +30,38 @@ World _initWorld(RoguelikeToolkit rltk) {
   final (playerX, playerY) = dungeon.rooms[0].center();
   final world = World()
     ..storage.put(dungeon)
+    ..storage.put(PositionPoint(playerX, playerY))
     ..createEntity([dungeon])
     ..createEntity([
       Player(),
+      Name('Player'),
       Position(playerX, playerY),
       Renderable(glyph: '@', color: Colors.red),
       Viewshed([], 8, true)
     ])
     ..registerSystem(VisibilitySystem())
-    ..registerSystem(DrawMapSystem(ctx: rltk))
-    ..registerSystem(RenderSystem(ctx: rltk))
-    ..init();
+    ..registerSystem(MonsterAI(rltk: rltk))
+    ..registerSystem(DrawMapSystem(rltk: rltk));
+
+  for(var i = 1; i < dungeon.rooms.length; i++){
+    final room = dungeon.rooms[i];
+    final (x, y) = room.center();
+    final random = Random().nextInt(2) + 1;
+    final (:glyph, :name) = switch (random) {
+      1 => (glyph: 'g', name: 'Goblin'),
+      2 => (glyph: 'o', name: 'Ork'),
+      _ => (glyph: '', name: ''),
+    };
+    world.createEntity([
+      Monster(),
+      Name('$name $i'),
+      Position(x, y),
+      Renderable(glyph: glyph, color: Colors.deepOrange),
+      Viewshed([], 8, true)
+    ]);
+  }
+
+  world.init();
   return world;
 }
 
@@ -95,9 +116,10 @@ class Roguelike extends StatelessWidget {
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
     final dungeon = gameState.world.storage.get<Dungeon>();
+    final player = gameState.world.gatherComponents<Player>();
     final position = gameState.world.gatherComponents<Position>();
     final viewshed = gameState.world.gatherComponents<Viewshed>();
-    for (var (pos, view) in (position, viewshed).join()) {
+    for (var (_, pos, view) in (player, position, viewshed).join()) {
       final destinationIdx =
           rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
       if (dungeon.tiles[destinationIdx] != TileType.wall) {
@@ -105,6 +127,11 @@ class Roguelike extends StatelessWidget {
         pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));
         view.dirty = true;
       }
+      var playerPosition = gameState.world.storage.get<PositionPoint>();
+      playerPosition.x = pos.x;
+      playerPosition.y = pos.y;
     }
+    gameState.runState = RunState.running;
   }
+
 }

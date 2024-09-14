@@ -4,6 +4,14 @@ import 'package:plain_ecs/plain_ecs.dart';
 
 class Player extends Component{}
 
+class Monster extends Component{}
+
+class Name extends Component{
+  final String name;
+
+  Name(this.name);
+}
+
 class Position extends Component{
   int x, y;
 

@@ -76,6 +76,10 @@ class RoguelikeToolkit {
     _buffer = newBuffer;
   }
 
+  void log(String text){
+    print(text);
+  }
+
   int getIndexByXY({required int x, required int y}) => y * columns + x;
 
   static int getIndexByXy(

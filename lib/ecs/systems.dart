@@ -9,9 +9,9 @@ import 'package:rltk/rltk.dart';
 import 'components.dart';
 
 class DrawMapSystem extends System {
-  final RoguelikeToolkit ctx;
+  final RoguelikeToolkit rltk;
 
-  DrawMapSystem({required this.ctx});
+  DrawMapSystem({required this.rltk});
 
   @override
   void run() {
@@ -34,7 +34,7 @@ class DrawMapSystem extends System {
           if (!dungeon.visibleTiles[i]) {
             fg = Colors.grey;
           }
-          ctx.set(symbol: symbol, color: fg, x: x, y: y);
+          rltk.set(symbol: symbol, color: fg, x: x, y: y);
         }
 
         // Move the coordinates
@@ -48,6 +48,7 @@ class DrawMapSystem extends System {
   }
 }
 
+/*
 class RenderSystem extends System {
   final RoguelikeToolkit ctx;
 
@@ -57,11 +58,16 @@ class RenderSystem extends System {
   void run() {
     final position = parentWorld.gatherComponents<Position>();
     final renderable = parentWorld.gatherComponents<Renderable>();
+    final dungeon = parentWorld.storage.get<Dungeon>();
     for (var (pos, ren) in (position, renderable).join()) {
-      ctx.set(symbol: ren.glyph, color: ren.color, x: pos.x, y: pos.y);
+      final idx = dungeon.getIndexByXY(x: pos.x, y: pos.y);
+      if (dungeon.visibleTiles[idx]) {
+        ctx.set(symbol: ren.glyph, color: ren.color, x: pos.x, y: pos.y);
+      }
     }
   }
 }
+*/
 
 class VisibilitySystem extends System {
   late final Dungeon _dungeon;
@@ -75,6 +81,7 @@ class VisibilitySystem extends System {
   void run() {
     final position = parentWorld.gatherComponents<Position>();
     final viewshed = parentWorld.gatherComponents<Viewshed>();
+    final player = parentWorld.gatherComponents<Player>();
     for (var (pos, view) in (position, viewshed).join()) {
       if (view.dirty) {
         view.dirty = false;
@@ -90,14 +97,38 @@ class VisibilitySystem extends System {
             p.x >= Constants.columns ||
             p.y < 0 ||
             p.y >= Constants.rows);
-        for (var i = 0; i < _dungeon.visibleTiles.length; i++) {
-          _dungeon.visibleTiles[i] = false;
+
+        // If this is the player, reveal what he can see
+        if(pos.entity == player[0].entity){
+          for (var i = 0; i < _dungeon.visibleTiles.length; i++) {
+            _dungeon.visibleTiles[i] = false;
+          }
+          for (final pt in view.visibleTiles) {
+            final idx = _dungeon.getIndexByXY(x: pt.x, y: pt.y);
+            _dungeon.revealedTiles[idx] = true;
+            _dungeon.visibleTiles[idx] = true;
+          }
         }
-        for (final pt in view.visibleTiles) {
-          final idx = _dungeon.getIndexByXY(x: pt.x, y: pt.y);
-          _dungeon.revealedTiles[idx] = true;
-          _dungeon.visibleTiles[idx] = true;
-        }
+      }
+    }
+  }
+}
+
+class MonsterAI extends System {
+
+  final RoguelikeToolkit rltk;
+
+  MonsterAI({required this.rltk});
+  
+  @override
+  void run() {
+    final monsters = parentWorld.gatherComponents<Monster>();
+    final names = parentWorld.gatherComponents<Name>();
+    final viewshed = parentWorld.gatherComponents<Viewshed>();
+    final playerPosition = parentWorld.storage.get<PositionPoint>();
+    for(var(_, name, viewshed) in (monsters, names, viewshed).join()){
+      if(viewshed.visibleTiles.contains(Point(playerPosition.x, playerPosition.y))){
+        rltk.log('${name.name} shouts insult');
       }
     }
   }
