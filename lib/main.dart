@@ -84,20 +84,23 @@ class Roguelike extends StatelessWidget {
         ),
         home: SafeArea(
             child: Scaffold(
-                body: Stack(children: [
-          RoguelikeToolkitView(
-            rltk: rltk,
-            gameState: gameState,
-          ),
-          kIsWeb
-              ? KeyListenerWidget(onTop: (direction) => _playerInput(direction))
-              : Positioned(
-                  bottom: 30,
-                  right: 30,
-                  child: CrossButtons(
-                    onTop: (direction) => _playerInput(direction),
-                  )),
-        ]))));
+                body: Responsive(
+          child: Stack(children: [
+            RoguelikeToolkitView(
+              rltk: rltk,
+              gameState: gameState,
+            ),
+            kIsWeb
+                ? KeyListenerWidget(
+                    onTop: (direction) => _playerInput(direction))
+                : Positioned(
+                    bottom: 30,
+                    right: 30,
+                    child: CrossButtons(
+                      onTop: (direction) => _playerInput(direction),
+                    )),
+          ]),
+        ))));
   }
 
   void _playerInput(Direction direction) {
