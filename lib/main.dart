@@ -1,14 +1,15 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_roguelike/ecs/ecs.dart';
-import 'package:flutter_roguelike/models/dungeon.dart';
 import 'package:flutter_roguelike/rl_state.dart';
-import 'package:flutter_roguelike/widgets/cross_buttons.dart';
 import 'package:plain_ecs/plain_ecs.dart';
 import 'package:rltk/rltk.dart';
 
 import 'const/const.dart';
+import 'models/models.dart';
+import 'widgets/widgets.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +44,7 @@ World _initWorld(RoguelikeToolkit rltk) {
     ..registerSystem(MonsterAI(rltk: rltk))
     ..registerSystem(DrawMapSystem(rltk: rltk));
 
-  for(var i = 1; i < dungeon.rooms.length; i++){
+  for (var i = 1; i < dungeon.rooms.length; i++) {
     final room = dungeon.rooms[i];
     final (x, y) = room.center();
     final random = Random().nextInt(2) + 1;
@@ -88,12 +89,14 @@ class Roguelike extends StatelessWidget {
             rltk: rltk,
             gameState: gameState,
           ),
-          Positioned(
-              bottom: 30,
-              right: 30,
-              child: CrossButtons(
-                onTop: (direction) => _playerInput(direction),
-              )),
+          kIsWeb
+              ? KeyListenerWidget(onTop: (direction) => _playerInput(direction))
+              : Positioned(
+                  bottom: 30,
+                  right: 30,
+                  child: CrossButtons(
+                    onTop: (direction) => _playerInput(direction),
+                  )),
         ]))));
   }
 
@@ -133,5 +136,4 @@ class Roguelike extends StatelessWidget {
     }
     gameState.runState = RunState.running;
   }
-
 }

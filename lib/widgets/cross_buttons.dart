@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/models.dart';
+
 class CrossButtons extends StatefulWidget {
   const CrossButtons({
     super.key,
@@ -85,11 +87,4 @@ class _CrossButtonsState extends State<CrossButtons> {
       ),
     );
   }
-}
-
-enum Direction {
-  up,
-  down,
-  left,
-  right,
 }
