@@ -35,4 +35,18 @@ class Viewshed extends Component{
 
 class BlocksTile extends Component{}
 
+class CombatStat extends Component{
+  int maxHp;
+  int hp;
+  int defense;
+  int power;
+
+  CombatStat({
+    required this.maxHp,
+    required this.hp,
+    required this.defense,
+    required this.power,
+  });
+}
+
 class LeftMover extends Component{}

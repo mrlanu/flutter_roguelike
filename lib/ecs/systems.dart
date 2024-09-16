@@ -132,9 +132,7 @@ class MonsterAI extends System {
       if (viewshed.visibleTiles
           .contains(Point(playerPosition.x, playerPosition.y))) {
         rltk.log('${name.name} shouts insult');
-        final path = aStar(
-            dungeon,
-            Point<int>(pos.x, pos.y),
+        final path = aStar(dungeon, Point<int>(pos.x, pos.y),
             Point<int>(playerPosition.x, playerPosition.y));
 
         if (path.length > 2) {
@@ -148,17 +146,20 @@ class MonsterAI extends System {
 }
 
 class MapIndexingSystem extends System {
-
   @override
   void run() {
-    final blockers = parentWorld.gatherComponents<BlocksTile>();
+    final blockers = parentWorld.gatherComponentsAsMap<BlocksTile>();
     final positions = parentWorld.gatherComponents<Position>();
     final dungeon = parentWorld.storage.get<Dungeon>();
     dungeon.populateBlocked();
-    for (var (_, pos)
-    in (blockers, positions,).join()) {
+    dungeon.clearContentIndex();
+    for (var (pos,) in (positions,).join()) {
       final index = dungeon.getIndexByXY(x: pos.x, y: pos.y);
-      dungeon.blocked[index] = true;
+      final blockerOption = blockers[pos.entity];
+      if(blockerOption != null){
+        dungeon.blocked[index] = true;
+      }
+      dungeon.tileContent[index].add(pos.entity);
     }
   }
 }

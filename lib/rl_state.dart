@@ -19,21 +19,19 @@ class RoguelikeGameState implements GameState {
     this.runState = RunState.running,
   }): _world = world;
 
-  @override
   World get world => _world;
 
   @override
   void tick({required RoguelikeToolkit ctx}) {
-    //Stopwatch stopwatch = Stopwatch()..start();
     if(runState == RunState.running){
+      //Stopwatch stopwatch = Stopwatch()..start();
       ctx.clx();
       world.run();
       _render(ctx: ctx);
       runState = RunState.paused;
+      //stopwatch.stop();
+      //print('Time >>> ${stopwatch.elapsedMilliseconds}');
     }
-
-    //stopwatch.stop();
-    //print('Time >>> ${stopwatch.elapsedMilliseconds}');
     //ctx.printText(text: 'Hello Rogualike', color: Colors.yellowAccent, x: 3, y: 15);
   }
 

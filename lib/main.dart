@@ -39,6 +39,7 @@ World _initWorld(RoguelikeToolkit rltk) {
       Position(playerX, playerY),
       Renderable(glyph: '@', color: Colors.red),
       Viewshed([], 8, true),
+      CombatStat(maxHp: 30, hp: 30, defense: 2, power: 5),
     ])
     ..registerSystem(VisibilitySystem())
     ..registerSystem(MonsterAI(rltk: rltk))
@@ -61,6 +62,7 @@ World _initWorld(RoguelikeToolkit rltk) {
       Renderable(glyph: glyph, color: Colors.deepOrange),
       Viewshed([], 8, true),
       BlocksTile(),
+      CombatStat(maxHp: 16, hp: 16, defense: 1, power: 4)
     ]);
   }
 
@@ -124,12 +126,19 @@ class Roguelike extends StatelessWidget {
 
   void _tryToMovePlayer({required int deltaX, required int deltaY}) {
     final dungeon = gameState.world.storage.get<Dungeon>();
+    final combatStats = gameState.world.gatherComponentsAsMap<CombatStat>();
     final player = gameState.world.gatherComponents<Player>();
     final position = gameState.world.gatherComponents<Position>();
     final viewshed = gameState.world.gatherComponents<Viewshed>();
     for (var (_, pos, view) in (player, position, viewshed).join()) {
       final destinationIdx =
           rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
+      for(final potentialTarget in dungeon.tileContent[destinationIdx]){
+        final target = combatStats[potentialTarget];
+        if(target != null){
+          rltk.log('From Hell\'s Heart, I stab thee!');
+        }
+      }
       if (!dungeon.blocked[destinationIdx]) {
         pos.x = min(Constants.columns - 1, max(0, pos.x + deltaX));
         pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));

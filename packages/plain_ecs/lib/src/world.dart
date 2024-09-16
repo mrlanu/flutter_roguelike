@@ -25,6 +25,13 @@ class World {
     return tp ?? [];
   }
 
+  Map<Entity, ComponentType> gatherComponentsAsMap<ComponentType>() {
+    final componentFamilyId = ComponentFamily.getBitIndex(ComponentType);
+    return _componentMaps[componentFamilyId]!.map((key, value) {
+      return MapEntry(key, value as ComponentType);
+    },);
+  }
+
   EntityHandle createEntity<ComponentType extends Component>(
       [List<ComponentType> components = const []]) {
     final result = EntityHandle(_entityManager.createEntity(), this);

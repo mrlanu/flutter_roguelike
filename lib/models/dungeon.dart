@@ -15,6 +15,7 @@ class Dungeon extends Component implements BaseMap {
   List<bool> revealedTiles = [];
   List<bool> visibleTiles = [];
   List<bool> blocked = [];
+  List<List<Entity>> tileContent = [];
 
   Dungeon._(this.width, this.height);
 
@@ -30,6 +31,8 @@ class Dungeon extends Component implements BaseMap {
         List<bool>.filled(Constants.columns * Constants.rows, false);
     dungeon.blocked =
         List<bool>.filled(Constants.columns * Constants.rows, false);
+    dungeon.tileContent =
+        List<List<Entity>>.generate(Constants.columns * Constants.rows, (index) => [],);
 
     dungeon.rooms = <Rect>[];
     const int maxRooms = 30;
@@ -121,6 +124,12 @@ class Dungeon extends Component implements BaseMap {
   void populateBlocked() {
     for (var i = 0; i < tiles.length; i++) {
       blocked[i] = tiles[i] == TileType.wall;
+    }
+  }
+
+  void clearContentIndex() {
+    for (final content in tileContent) {
+      content.clear();
     }
   }
 
