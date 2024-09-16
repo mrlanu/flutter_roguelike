@@ -14,6 +14,7 @@ class Dungeon extends Component implements BaseMap {
 
   List<bool> revealedTiles = [];
   List<bool> visibleTiles = [];
+  List<bool> blocked = [];
 
   Dungeon._(this.width, this.height);
 
@@ -26,6 +27,8 @@ class Dungeon extends Component implements BaseMap {
     dungeon.revealedTiles =
         List<bool>.filled(Constants.columns * Constants.rows, false);
     dungeon.visibleTiles =
+        List<bool>.filled(Constants.columns * Constants.rows, false);
+    dungeon.blocked =
         List<bool>.filled(Constants.columns * Constants.rows, false);
 
     dungeon.rooms = <Rect>[];
@@ -115,6 +118,13 @@ class Dungeon extends Component implements BaseMap {
     }
   }
 
+  void populateBlocked() {
+    for (var i = 0; i < tiles.length; i++) {
+      blocked[i] = tiles[i] == TileType.wall;
+    }
+  }
+
+  @override
   int getIndexByXY({required int x, required int y}) => y * width + x;
 
   @override
@@ -123,4 +133,7 @@ class Dungeon extends Component implements BaseMap {
 
   @override
   Point<int> dimension() => Point(width, height);
+
+  @override
+  bool isBlocked(int x, int y) => blocked[getIndexByXY(x: x, y: y)];
 }

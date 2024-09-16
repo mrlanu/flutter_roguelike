@@ -42,6 +42,7 @@ World _initWorld(RoguelikeToolkit rltk) {
     ])
     ..registerSystem(VisibilitySystem())
     ..registerSystem(MonsterAI(rltk: rltk))
+    ..registerSystem(MapIndexingSystem())
     ..registerSystem(DrawMapSystem(rltk: rltk));
 
   for (var i = 1; i < dungeon.rooms.length; i++) {
@@ -58,7 +59,8 @@ World _initWorld(RoguelikeToolkit rltk) {
       Name('$name $i'),
       Position(x, y),
       Renderable(glyph: glyph, color: Colors.deepOrange),
-      Viewshed([], 8, true)
+      Viewshed([], 8, true),
+      BlocksTile(),
     ]);
   }
 
@@ -128,7 +130,8 @@ class Roguelike extends StatelessWidget {
     for (var (_, pos, view) in (player, position, viewshed).join()) {
       final destinationIdx =
           rltk.getIndexByXY(x: pos.x + deltaX, y: pos.y + deltaY);
-      if (dungeon.tiles[destinationIdx] != TileType.wall) {
+      final sterti = !dungeon.blocked[destinationIdx];
+      if (!dungeon.blocked[destinationIdx]) {
         pos.x = min(Constants.columns - 1, max(0, pos.x + deltaX));
         pos.y = min(Constants.rows - 1, max(0, pos.y + deltaY));
         view.dirty = true;

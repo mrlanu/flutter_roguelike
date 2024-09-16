@@ -13,7 +13,9 @@ extension RecordExtension1<T1 extends Component> on (List<T1>,) {
 }
 
 extension RecordExtension2<T1 extends Component, T2 extends Component> on (
-  List<T1>, List<T2>) {
+  List<T1>,
+  List<T2>
+) {
   List<(T1, T2)> join() {
     final result = <(T1, T2)>[];
 
@@ -52,6 +54,43 @@ extension RecordExtension3<T1 extends Component, T2 extends Component,
           map3.containsKey(component1.entity)) {
         result.add(
             (component1, map2[component1.entity]!, map3[component1.entity]!));
+      }
+    }
+
+    return result;
+  }
+}
+
+extension RecordExtension4<
+    T1 extends Component,
+    T2 extends Component,
+    T3 extends Component,
+    T4 extends Component> on (List<T1>, List<T2>, List<T3>, List<T4>) {
+  List<(T1, T2, T3, T4)> join() {
+    final result = <(T1, T2, T3, T4)>[];
+
+    // Convert list2 and list3 to maps for efficient lookup by entity
+    Map<int, T2> map2 = {
+      for (var component in this.$2) component.entity: component
+    };
+    Map<int, T3> map3 = {
+      for (var component in this.$3) component.entity: component
+    };
+    Map<int, T4> map4 = {
+      for (var component in this.$4) component.entity: component
+    };
+
+    // Iterate over list1 and check if entity exists in both map2 and map3
+    for (var component1 in this.$1) {
+      if (map2.containsKey(component1.entity) &&
+          map3.containsKey(component1.entity) &&
+          map4.containsKey(component1.entity)) {
+        result.add((
+          component1,
+          map2[component1.entity]!,
+          map3[component1.entity]!,
+          map4[component1.entity]!
+        ));
       }
     }
 

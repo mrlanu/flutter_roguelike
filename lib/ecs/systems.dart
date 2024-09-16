@@ -99,7 +99,7 @@ class VisibilitySystem extends System {
             p.y >= Constants.rows);
 
         // If this is the player, reveal what he can see
-        if(pos.entity == player[0].entity){
+        if (pos.entity == player[0].entity) {
           for (var i = 0; i < _dungeon.visibleTiles.length; i++) {
             _dungeon.visibleTiles[i] = false;
           }
@@ -115,21 +115,50 @@ class VisibilitySystem extends System {
 }
 
 class MonsterAI extends System {
-
   final RoguelikeToolkit rltk;
 
   MonsterAI({required this.rltk});
-  
+
   @override
   void run() {
     final monsters = parentWorld.gatherComponents<Monster>();
     final names = parentWorld.gatherComponents<Name>();
     final viewshed = parentWorld.gatherComponents<Viewshed>();
+    final positions = parentWorld.gatherComponents<Position>();
     final playerPosition = parentWorld.storage.get<PositionPoint>();
-    for(var(_, name, viewshed) in (monsters, names, viewshed).join()){
-      if(viewshed.visibleTiles.contains(Point(playerPosition.x, playerPosition.y))){
+    final dungeon = parentWorld.storage.get<Dungeon>();
+    for (var (_, name, viewshed, pos)
+        in (monsters, names, viewshed, positions).join()) {
+      if (viewshed.visibleTiles
+          .contains(Point(playerPosition.x, playerPosition.y))) {
         rltk.log('${name.name} shouts insult');
+        final path = aStar(
+            dungeon,
+            Point<int>(pos.x, pos.y),
+            Point<int>(playerPosition.x, playerPosition.y));
+
+        if (path.length > 2) {
+          pos.x = path[1].x;
+          pos.y = path[1].y;
+          viewshed.dirty = true;
+        }
       }
+    }
+  }
+}
+
+class MapIndexingSystem extends System {
+
+  @override
+  void run() {
+    final blockers = parentWorld.gatherComponents<BlocksTile>();
+    final positions = parentWorld.gatherComponents<Position>();
+    final dungeon = parentWorld.storage.get<Dungeon>();
+    dungeon.populateBlocked();
+    for (var (_, pos)
+    in (blockers, positions,).join()) {
+      final index = dungeon.getIndexByXY(x: pos.x, y: pos.y);
+      dungeon.blocked[index] = true;
     }
   }
 }

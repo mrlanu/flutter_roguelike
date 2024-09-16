@@ -33,4 +33,6 @@ class Viewshed extends Component{
   Viewshed(this.visibleTiles, this.range, this.dirty);
 }
 
+class BlocksTile extends Component{}
+
 class LeftMover extends Component{}
