@@ -12,6 +12,7 @@ class RoguelikeGameState implements GameState {
   final World _world;
   RunState runState;
 
+  static int count = 0;
 
   RoguelikeGameState({
     required World world,
@@ -27,10 +28,16 @@ class RoguelikeGameState implements GameState {
     if(runState == RunState.running){
       ctx.clx();
       world.run();
+      _render(ctx: ctx);
       runState = RunState.paused;
     }
 
-    // rendering
+    //stopwatch.stop();
+    //print('Time >>> ${stopwatch.elapsedMilliseconds}');
+    //ctx.printText(text: 'Hello Rogualike', color: Colors.yellowAccent, x: 3, y: 15);
+  }
+
+  void _render({required RoguelikeToolkit ctx}){
     final position = _world.gatherComponents<Position>();
     final renderable = _world.gatherComponents<Renderable>();
     final dungeon = _world.storage.get<Dungeon>();
@@ -40,9 +47,5 @@ class RoguelikeGameState implements GameState {
         ctx.set(symbol: ren.glyph, color: ren.color, x: pos.x, y: pos.y);
       }
     }
-    //stopwatch.stop();
-    //print('Time >>> ${stopwatch.elapsedMilliseconds}');
-
-    //ctx.printText(text: 'Hello Rogualike', color: Colors.yellowAccent, x: 3, y: 15);
   }
 }
